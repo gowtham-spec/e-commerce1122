@@ -28,7 +28,7 @@ const LoginPage = () => {
     e.preventDefault();
     
     if (!email || !password) {
-      setError('Please enter both email and password');
+      setError('Please fill in all fields');
       return;
     }
     
@@ -38,12 +38,12 @@ const LoginPage = () => {
       await login(email, password);
       // No need to navigate here as the auth state listener will trigger the redirect
     } catch (error: any) {
-      setError(error.message || 'Failed to login. Please check your credentials.');
+      setError(error.message || 'Failed to log in. Please check your credentials and try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleSocialLogin = (provider: string) => {
     setError(`${provider} login is not implemented yet.`);
   };
@@ -51,9 +51,9 @@ const LoginPage = () => {
   return (
     <div className="container max-w-md mx-auto py-12 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Welcome Back</h1>
+        <h1 className="text-3xl font-bold">Sign In to Your Account</h1>
         <p className="text-muted-foreground mt-2">
-          Sign in to your TradeMarket account
+          Welcome back to TradeMarket
         </p>
       </div>
       
@@ -77,13 +77,10 @@ const LoginPage = () => {
         </div>
         
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link 
-              to="/forgot-password" 
-              className="text-sm text-primary hover:underline"
-            >
-              Forgot password?
+            <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+              Forgot Password?
             </Link>
           </div>
           <Input
@@ -97,7 +94,7 @@ const LoginPage = () => {
         </div>
         
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Signing in...' : 'Sign In'}
+          {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>
       </form>
       
@@ -132,7 +129,7 @@ const LoginPage = () => {
       <p className="text-center mt-8 text-sm text-muted-foreground">
         Don't have an account?{' '}
         <Link to="/register" className="text-primary hover:underline">
-          Create an account
+          Sign up
         </Link>
       </p>
     </div>
