@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
-import { Facebook, GitHub, Mail } from 'lucide-react';
+import { Facebook, Github, Mail } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -108,7 +107,7 @@ const LoginPage = () => {
             Facebook
           </Button>
           <Button variant="outline" className="flex-1">
-            <GitHub className="h-4 w-4 mr-2" />
+            <Github className="h-4 w-4 mr-2" />
             GitHub
           </Button>
           <Button variant="outline" className="flex-1">
