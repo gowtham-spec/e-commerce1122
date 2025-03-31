@@ -1,149 +1,172 @@
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import ProductCard from '@/components/ProductCard';
-import { searchProducts } from '@/data/products';
-import { Search, ChevronRight } from 'lucide-react';
+import AdvancedFilters from '@/components/AdvancedFilters';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, Filter, Loader2 } from 'lucide-react';
+
+const fetchSearchResults = async (query: string, filters: any) => {
+  let supabaseQuery = supabase
+    .from('products')
+    .select('*, product_images(*)')
+    .ilike('name', `%${query}%`);
+  
+  // Apply price filter
+  if (filters.priceRange && filters.priceRange.length === 2) {
+    supabaseQuery = supabaseQuery
+      .gte('price', filters.priceRange[0])
+      .lte('price', filters.priceRange[1]);
+  }
+  
+  // Apply in-stock filter
+  if (filters.inStock) {
+    supabaseQuery = supabaseQuery.gt('stock', 0);
+  }
+  
+  // Apply sorting
+  if (filters.sortBy === 'price-asc') {
+    supabaseQuery = supabaseQuery.order('price', { ascending: true });
+  } else if (filters.sortBy === 'price-desc') {
+    supabaseQuery = supabaseQuery.order('price', { ascending: false });
+  } else if (filters.sortBy === 'newest') {
+    supabaseQuery = supabaseQuery.order('created_at', { ascending: false });
+  }
+  
+  const { data, error } = await supabaseQuery;
+  
+  if (error) throw error;
+  return data;
+};
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get('q') || '';
-  const [localQuery, setLocalQuery] = useState(searchQuery);
-  const [products, setProducts] = useState(searchProducts(searchQuery));
-  const [sortOption, setSortOption] = useState('');
+  const queryParam = searchParams.get('q') || '';
+  const [searchTerm, setSearchTerm] = useState(queryParam);
+  const [filters, setFilters] = useState({
+    priceRange: [0, 1000],
+    sortBy: 'relevance',
+    useAI: true,
+    inStock: false
+  });
   
-  // Update products when search query changes
-  useEffect(() => {
-    setProducts(searchProducts(searchQuery));
-    setLocalQuery(searchQuery);
-  }, [searchQuery]);
+  const { data: results, isLoading, error, refetch } = useQuery({
+    queryKey: ['search-results', queryParam, filters],
+    queryFn: () => fetchSearchResults(queryParam, filters),
+    enabled: !!queryParam,
+  });
   
-  // Apply sorting
   useEffect(() => {
-    if (sortOption) {
-      let sortedProducts = [...products];
-      
-      switch (sortOption) {
-        case 'price-asc':
-          sortedProducts.sort((a, b) => a.price - b.price);
-          break;
-        case 'price-desc':
-          sortedProducts.sort((a, b) => b.price - a.price);
-          break;
-        case 'rating':
-          sortedProducts.sort((a, b) => b.rating - a.rating);
-          break;
-        case 'newest':
-          sortedProducts.sort((a, b) => b.id.localeCompare(a.id));
-          break;
-      }
-      
-      setProducts(sortedProducts);
+    if (queryParam) {
+      setSearchTerm(queryParam);
     }
-  }, [sortOption]);
+  }, [queryParam]);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (localQuery.trim()) {
-      setSearchParams({ q: localQuery.trim() });
+    if (searchTerm.trim()) {
+      setSearchParams({ q: searchTerm.trim() });
     }
   };
   
+  const handleApplyFilters = (newFilters: any) => {
+    setFilters(newFilters);
+    refetch();
+  };
+  
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+  
   return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground mb-8">
-        <Link to="/" className="hover:text-primary">Home</Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <span>Search</span>
-        {searchQuery && (
-          <>
-            <ChevronRight className="h-4 w-4 mx-2" />
-            <span>"{searchQuery}"</span>
-          </>
-        )}
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Search Products</h1>
       
-      {/* Search header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6">
-          {searchQuery 
-            ? `Search results for "${searchQuery}"` 
-            : 'Search our products'}
-        </h1>
-        
-        <form onSubmit={handleSearch} className="flex w-full max-w-lg gap-2">
-          <Input
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.target.value)}
-            placeholder="Search for products..."
-            className="flex-1"
-          />
-          <Button type="submit">
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-        </form>
-      </div>
+      <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+        <Input
+          type="text"
+          placeholder="Search for products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1"
+        />
+        <Button type="submit" className="flex items-center gap-2">
+          <Search className="h-4 w-4" />
+          Search
+        </Button>
+      </form>
       
-      {/* Results */}
-      <div className="mb-8">
-        {searchQuery && (
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-sm text-muted-foreground">
-              Showing {products.length} results for "{searchQuery}"
-            </p>
-            
-            {/* Sort dropdown */}
-            <Select value={sortOption} onValueChange={setSortOption}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Best Rating</SelectItem>
-                <SelectItem value="newest">Newest</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-        
-        {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="h-16 w-16 mx-auto bg-muted rounded-full flex items-center justify-center mb-4">
-              <Search className="h-8 w-8 text-muted-foreground" />
+      {queryParam && (
+        <>
+          <AdvancedFilters onApplyFilters={handleApplyFilters} />
+          
+          {isLoading ? (
+            <div className="py-12 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading results...</p>
             </div>
-            <h3 className="text-lg font-medium mb-2">No products found</h3>
-            <p className="text-muted-foreground mb-6">
-              We couldn't find any products matching "{searchQuery}".
-            </p>
-            <div className="space-y-2">
-              <p className="text-sm">Try:</p>
-              <ul className="text-sm list-disc list-inside">
-                <li>Checking your spelling</li>
-                <li>Using fewer keywords</li>
-                <li>Using more general terms</li>
-              </ul>
+          ) : error ? (
+            <div className="py-12 text-center text-red-500">
+              Failed to load search results. Please try again.
             </div>
-          </div>
-        )}
-      </div>
+          ) : results && results.length > 0 ? (
+            <>
+              <p className="text-muted-foreground mb-6">
+                Found {results.length} results for "{queryParam}"
+              </p>
+              
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                <AnimatePresence>
+                  {results.map((product) => (
+                    <motion.div key={product.id} variants={item} layout>
+                      <ProductCard 
+                        product={product} 
+                        layoutId={`search-product-${product.id}`}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </>
+          ) : (
+            <div className="py-12 text-center">
+              <p className="text-xl">No results found for "{queryParam}"</p>
+              <p className="text-muted-foreground mt-2">
+                Try using different keywords or filters
+              </p>
+            </div>
+          )}
+        </>
+      )}
+      
+      {!queryParam && (
+        <div className="py-12 text-center">
+          <p className="text-xl mb-2">Start searching to find products</p>
+          <p className="text-muted-foreground">
+            Use the search bar above to discover our products
+          </p>
+        </div>
+      )}
     </div>
   );
 };

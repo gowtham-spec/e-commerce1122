@@ -1,381 +1,295 @@
 
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
+import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
-import { getProductById, searchProducts } from '@/data/products';
-import { Heart, ShoppingCart, Truck, Shield, RotateCcw, Star, ChevronRight } from 'lucide-react';
-import ProductCard from '@/components/ProductCard';
+import { ShoppingCart, Heart, ArrowLeft, Star, Sparkles } from 'lucide-react';
+
+const fetchProduct = async (productId: string) => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, product_images(*)')
+    .eq('id', productId)
+    .single();
+  
+  if (error) throw error;
+  return data;
+};
 
 const ProductPage = () => {
   const { productId } = useParams<{ productId: string }>();
-  const [quantity, setQuantity] = useState(1);
-  const { addItem } = useCart();
-  const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlist();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { addToCart } = useCart();
+  const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
+  const [selectedImage, setSelectedImage] = useState(0);
   
-  const product = productId ? getProductById(productId) : null;
-  
-  if (!product) {
-    return (
-      <div className="container mx-auto py-16 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
-        <p className="mb-6">The product you are looking for does not exist or has been removed.</p>
-        <Button asChild>
-          <Link to="/products">Browse Products</Link>
-        </Button>
-      </div>
-    );
-  }
-  
-  const isWishlisted = isInWishlist(product.id);
+  const { data: product, isLoading, error } = useQuery({
+    queryKey: ['product', productId],
+    queryFn: () => fetchProduct(productId!),
+    enabled: !!productId,
+  });
   
   const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity,
-      category: product.category
-    });
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.product_images?.[0]?.url || '',
+      });
+      
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart`,
+      });
+    }
   };
   
-  const handleWishlistToggle = () => {
-    if (isWishlisted) {
+  const handleToggleWishlist = () => {
+    if (!product) return;
+    
+    const inWishlist = isInWishlist(product.id);
+    
+    if (inWishlist) {
       removeFromWishlist(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist`,
+      });
     } else {
       addToWishlist({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images[0],
-        category: product.category
+        image: product.product_images?.[0]?.url || '',
+      });
+      
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist`,
       });
     }
   };
-
-  // Get related products (for demo we'll just use products in the same category)
-  const relatedProducts = searchProducts(product.subcategory)
-    .filter(p => p.id !== product.id)
-    .slice(0, 4);
-
-  return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground mb-8">
-        <Link to="/" className="hover:text-primary">Home</Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <Link to={`/category/${product.category}`} className="hover:text-primary capitalize">
-          {product.category}
-        </Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <Link to={`/category/${product.category}/${product.subcategory}`} className="hover:text-primary capitalize">
-          {product.subcategory}
-        </Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <span className="truncate max-w-[150px]">{product.name}</span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        {/* Product Images */}
-        <div className="relative">
-          <Carousel className="w-full">
-            <CarouselContent>
-              {product.images.map((image, index) => (
-                <CarouselItem key={index}>
-                  <div className="aspect-square relative bg-gray-100 rounded-lg overflow-hidden">
-                    <img
-                      src={image}
-                      alt={`${product.name} - Image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-4" />
-            <CarouselNext className="right-4" />
-          </Carousel>
-          
-          {product.stock <= 5 && product.stock > 0 && (
-            <Badge variant="secondary" className="absolute top-4 left-4">
-              Low Stock
-            </Badge>
-          )}
-          
-          {product.stock === 0 && (
-            <Badge variant="destructive" className="absolute top-4 left-4">
-              Out of Stock
-            </Badge>
-          )}
+  
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <div className="animate-pulse">
+          <div className="h-8 bg-muted rounded w-1/3 mx-auto mb-4"></div>
+          <div className="h-80 bg-muted rounded mb-4"></div>
+          <div className="h-4 bg-muted rounded w-2/3 mx-auto mb-2"></div>
+          <div className="h-4 bg-muted rounded w-1/2 mx-auto mb-2"></div>
         </div>
-
-        {/* Product Details */}
-        <div>
-          <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+      </div>
+    );
+  }
+  
+  if (error || !product) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <p className="text-red-500 mb-4">Failed to load product details</p>
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Go Back
+        </Button>
+      </div>
+    );
+  }
+  
+  const productImages = product.product_images || [];
+  const mainImage = productImages[selectedImage]?.url || '';
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="container mx-auto px-4 py-8"
+    >
+      <Button 
+        variant="ghost" 
+        className="mb-6"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Back to Products
+      </Button>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="space-y-4">
+          <motion.div 
+            className="aspect-square rounded-lg overflow-hidden bg-muted"
+            layoutId={`product-${product.id}-image`}
+          >
+            {mainImage ? (
+              <motion.img 
+                src={mainImage} 
+                alt={product.name}
+                className="w-full h-full object-cover"
+                initial={{ scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                No image available
+              </div>
+            )}
+          </motion.div>
           
-          <div className="flex items-center mb-4">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star 
-                  key={i} 
-                  className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                />
+          {productImages.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {productImages.map((image, index) => (
+                <motion.button
+                  key={image.id}
+                  className={`relative rounded-md overflow-hidden w-16 h-16 flex-shrink-0 ${
+                    selectedImage === index ? 'ring-2 ring-primary' : ''
+                  }`}
+                  onClick={() => setSelectedImage(index)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <img 
+                    src={image.url} 
+                    alt={`${product.name} - view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.button>
               ))}
             </div>
-            <span className="ml-2 text-sm text-muted-foreground">
-              {product.rating} ({product.reviewCount} reviews)
+          )}
+        </div>
+        
+        <div className="space-y-6">
+          <motion.h1 
+            className="text-3xl font-bold"
+            layoutId={`product-${product.id}-title`}
+          >
+            {product.name}
+          </motion.h1>
+          
+          <motion.div 
+            className="flex items-center gap-2"
+            layoutId={`product-${product.id}-price`}
+          >
+            <span className="text-2xl font-semibold">${product.price.toFixed(2)}</span>
+            {product.stock > 0 ? (
+              <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                In Stock
+              </span>
+            ) : (
+              <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+                Out of Stock
+              </span>
+            )}
+          </motion.div>
+          
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`h-5 w-5 ${
+                  i < (product.rating || 0) 
+                    ? 'text-yellow-400 fill-yellow-400' 
+                    : 'text-gray-300'
+                }`} 
+              />
+            ))}
+            <span className="text-sm text-muted-foreground ml-2">
+              {product.rating} out of 5
             </span>
           </div>
           
-          <div className="text-2xl font-bold mb-6">${product.price.toFixed(2)}</div>
+          <motion.p 
+            className="text-muted-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {product.description || 'No description available'}
+          </motion.p>
           
-          <p className="text-muted-foreground mb-6">{product.description}</p>
-          
-          <div className="mb-6">
-            <div className="font-semibold mb-2">Brand: <span className="font-normal">{product.brand}</span></div>
-            <div className="font-semibold mb-2">Category: <span className="font-normal capitalize">{product.category}</span></div>
-            <div className="font-semibold mb-2">
-              Availability: 
-              <span className={`font-normal ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                {product.stock > 0 ? ` In Stock (${product.stock} available)` : ' Out of Stock'}
-              </span>
-            </div>
-          </div>
-          
-          {product.stock > 0 && (
-            <div className="flex items-center mb-6">
-              <div className="mr-4">
-                <label htmlFor="quantity" className="block text-sm font-medium mb-1">
-                  Quantity
-                </label>
-                <div className="flex items-center border border-gray-300 rounded-md">
-                  <button
-                    className="px-3 py-2 bg-gray-100 border-r border-gray-300 rounded-l-md"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  >
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    id="quantity"
-                    min="1"
-                    max={product.stock}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.min(product.stock, Math.max(1, parseInt(e.target.value) || 1)))}
-                    className="w-12 p-2 text-center border-none focus:outline-none focus:ring-0"
+          {product.colors && product.colors.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Colors</h3>
+              <div className="flex gap-2">
+                {product.colors.map((color) => (
+                  <motion.button
+                    key={color}
+                    className={`w-8 h-8 rounded-full border`}
+                    style={{ backgroundColor: color }}
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.95 }}
                   />
-                  <button
-                    className="px-3 py-2 bg-gray-100 border-l border-gray-300 rounded-r-md"
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  >
-                    +
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
           )}
           
-          <div className="flex flex-wrap gap-4 mb-8">
+          {product.sizes && product.sizes.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Sizes</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((size) => (
+                  <motion.button
+                    key={size}
+                    className="border rounded px-3 py-1 text-sm"
+                    whileHover={{ scale: 1.05, backgroundColor: 'rgba(var(--primary), 0.1)' }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {size}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button 
-              onClick={handleAddToCart} 
-              disabled={product.stock === 0}
-              className="flex-1"
-              size="lg"
+              className="flex-1 gap-2"
+              onClick={handleAddToCart}
+              disabled={product.stock <= 0}
             >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              <ShoppingCart className="h-4 w-4" />
+              Add to Cart
             </Button>
             
             <Button 
-              variant={isWishlisted ? "secondary" : "outline"} 
-              onClick={handleWishlistToggle}
-              size="lg"
+              variant="outline" 
+              className="flex-1 gap-2"
+              onClick={handleToggleWishlist}
             >
-              <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`} />
-              <span className="ml-2 hidden sm:inline">{isWishlisted ? 'Added to Wishlist' : 'Add to Wishlist'}</span>
+              <Heart 
+                className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} 
+              />
+              {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
             </Button>
           </div>
           
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center text-muted-foreground">
-              <Truck className="h-5 w-5 mr-2" />
-              <span>Free shipping on orders over $50</span>
+          <motion.div 
+            className="border rounded-lg p-4 mt-6 bg-muted/30 flex items-start gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-sm">AI Recommendation</h3>
+              <p className="text-sm text-muted-foreground">
+                Based on your browsing history, you might also like products in the {product.category} category.
+              </p>
             </div>
-            <div className="flex items-center text-muted-foreground">
-              <Shield className="h-5 w-5 mr-2" />
-              <span>2 year extended warranty</span>
-            </div>
-            <div className="flex items-center text-muted-foreground">
-              <RotateCcw className="h-5 w-5 mr-2" />
-              <span>30 day money back guarantee</span>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-
-      {/* Product tabs */}
-      <Tabs defaultValue="description" className="mb-16">
-        <TabsList className="w-full grid grid-cols-3 mb-8">
-          <TabsTrigger value="description">Description</TabsTrigger>
-          <TabsTrigger value="specifications">Specifications</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews ({product.reviewCount})</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="description" className="prose max-w-none">
-          <p>{product.description}</p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim.
-          </p>
-          <p>
-            Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod lacus luctus magna. Quisque cursus, metus vitae pharetra auctor, sem massa mattis sem, at interdum magna augue eget diam.
-          </p>
-        </TabsContent>
-        
-        <TabsContent value="specifications">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Product Specifications</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Brand</span>
-                  <span>{product.brand}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Model</span>
-                  <span>{product.id.split('-').slice(-1)[0].toUpperCase()}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Category</span>
-                  <span className="capitalize">{product.category}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Subcategory</span>
-                  <span className="capitalize">{product.subcategory}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Warranty</span>
-                  <span>2 Years</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Return Policy</span>
-                  <span>30 Days</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Shipping</span>
-                  <span>Free over $50</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Origin</span>
-                  <span>United States</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="reviews">
-          <div className="space-y-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="md:w-1/3 bg-gray-50 p-6 rounded-lg">
-                <div className="text-center mb-4">
-                  <div className="text-5xl font-bold">{product.rating}</div>
-                  <div className="flex items-center justify-center my-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Based on {product.reviewCount} reviews</div>
-                </div>
-                
-                <Separator className="my-4" />
-                
-                <div className="space-y-2">
-                  {[5, 4, 3, 2, 1].map((star) => {
-                    // Mock percentage for each star rating
-                    const percentage = star === 5 ? 65 : 
-                                      star === 4 ? 20 : 
-                                      star === 3 ? 10 : 
-                                      star === 2 ? 3 : 2;
-                    return (
-                      <div key={star} className="flex items-center">
-                        <div className="w-8 text-sm font-medium">{star} star</div>
-                        <div className="flex-1 mx-3 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-yellow-400" 
-                            style={{ width: `${percentage}%` }}
-                          ></div>
-                        </div>
-                        <div className="w-8 text-sm text-right">{percentage}%</div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <Button className="w-full mt-6">Write a Review</Button>
-              </div>
-              
-              <div className="md:w-2/3 space-y-6">
-                {/* Mock reviews */}
-                {[...Array(3)].map((_, index) => (
-                  <div key={index} className="border-b pb-6">
-                    <div className="flex justify-between mb-2">
-                      <h4 className="font-medium">John Doe</h4>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(Date.now() - index * 86400000 * 7).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < (5 - index % 2) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                    <p>
-                      {index === 0 ? 
-                        "This product exceeded my expectations. The quality is outstanding and it looks even better in person. Would definitely recommend!" : 
-                        index === 1 ? 
-                        "Great product for the price. Shipping was fast and the item was well-packaged. Very satisfied with my purchase." : 
-                        "I've been using this for a few weeks now and it's holding up well. The design is sleek and functional. Only giving 4 stars because the instructions could be clearer."}
-                    </p>
-                  </div>
-                ))}
-                
-                <Button variant="outline">Load More Reviews</Button>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {relatedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    </motion.div>
   );
 };
 
