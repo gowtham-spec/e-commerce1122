@@ -5,67 +5,67 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --background: 258 30% 98%;
+    --foreground: 258 30% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 258 20% 90%;
+    --muted-foreground: 258 10% 40%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 258 30% 10%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 258 20% 85%;
+    --input: 258 20% 85%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 258 30% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 258 80% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 258 40% 92%;
+    --secondary-foreground: 258 30% 10%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 258 40% 92%;
+    --accent-foreground: 258 30% 10%;
 
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 215 20.2% 65.1%;
+    --ring: 258 50% 70%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
+    --background: 258 30% 8%;
+    --foreground: 258 10% 90%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
+    --muted: 258 20% 20%;
+    --muted-foreground: 258 10% 60%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 258 30% 20%;
+    --accent-foreground: 258 10% 90%;
 
-    --popover: 224 71% 4%;
-    --popover-foreground: 215 20.2% 65.1%;
+    --popover: 258 30% 8%;
+    --popover-foreground: 258 10% 90%;
 
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
+    --border: 258 30% 20%;
+    --input: 258 30% 20%;
 
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
+    --card: 258 30% 10%;
+    --card-foreground: 258 10% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
+    --primary: 258 80% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 258 30% 20%;
+    --secondary-foreground: 258 10% 90%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 258 10% 90%;
 
-    --ring: 216 34% 17%;
+    --ring: 258 30% 30%;
 
     --radius: 0.5rem;
   }
@@ -99,25 +99,70 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full;
+  @apply bg-purple-400/50 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
+  @apply bg-purple-500/70;
 }
 
 /* Product card hover effects */
 .product-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  @apply bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-950/50;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
-              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.2),
+              0 8px 10px -6px rgba(139, 92, 246, 0.1);
 }
 
 .dark .product-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
-              0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3),
+              0 8px 10px -6px rgba(139, 92, 246, 0.2);
+}
+
+/* Purple gradient effects */
+.purple-gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400;
+}
+
+.purple-gradient-bg {
+  @apply bg-gradient-to-r from-purple-700 via-purple-600 to-purple-500;
+}
+
+.purple-gradient-border {
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to right, #9b87f5, #7E69AB) 1;
+}
+
+.glass-card {
+  @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-purple-200/50 dark:border-purple-800/30 rounded-xl shadow-lg;
+}
+
+.purple-glow {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.dark .purple-glow {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Floating animation for featured items */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

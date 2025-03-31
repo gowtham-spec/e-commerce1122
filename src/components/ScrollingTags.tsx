@@ -34,7 +34,7 @@ const ScrollingTags = () => {
           className="absolute inset-0 flex items-center justify-center"
         >
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary ring-1 ring-inset ring-primary/20">
+            <span className="inline-flex items-center rounded-full bg-purple-gradient px-3 py-1 text-sm font-medium text-white shadow-md ring-1 ring-inset ring-purple-400/20">
               {tags[activeTagIndex]}
             </span>
           </div>
