@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,8 +18,15 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,12 +51,16 @@ const RegisterPage = () => {
       setError('');
       setIsLoading(true);
       await register(name, email, password);
-      navigate('/');
-    } catch (error) {
-      setError('Failed to create an account. Please try again.');
+      // No need to navigate here as the auth state listener will trigger the redirect
+    } catch (error: any) {
+      setError(error.message || 'Failed to create an account. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSocialLogin = (provider: string) => {
+    setError(`${provider} registration is not implemented yet.`);
   };
 
   return (
@@ -150,15 +161,15 @@ const RegisterPage = () => {
         </div>
         
         <div className="flex gap-3 mt-6">
-          <Button variant="outline" className="flex-1">
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('Facebook')}>
             <Facebook className="h-4 w-4 mr-2" />
             Facebook
           </Button>
-          <Button variant="outline" className="flex-1">
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('GitHub')}>
             <Github className="h-4 w-4 mr-2" />
             GitHub
           </Button>
-          <Button variant="outline" className="flex-1">
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('Google')}>
             <Mail className="h-4 w-4 mr-2" />
             Google
           </Button>
