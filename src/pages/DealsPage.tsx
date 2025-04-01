@@ -21,7 +21,7 @@ const sampleDeals = [
     category: 'Smartphones',
     brand: 'Apple',
     endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: 'Experience the power of Apple's latest flagship phone with stunning camera and incredible performance.'
+    description: "Experience the power of Apple's latest flagship phone with stunning camera and incredible performance."
   },
   {
     id: 'deal2',
@@ -93,7 +93,7 @@ const sampleDeals = [
     category: 'Smartphones',
     brand: 'Google',
     endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: 'Google's flagship phone with amazing camera capabilities and pure Android experience.'
+    description: "Google's flagship phone with amazing camera capabilities and pure Android experience."
   },
   {
     id: 'deal8',
