@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -92,7 +93,7 @@ const ProductPage: React.FC = () => {
                 key={index}
                 src={image}
                 alt={`${product.name} - Image ${index + 1}`}
-                className="w-20 h-20 rounded-md object-cover cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+                className={`w-20 h-20 rounded-md object-cover cursor-pointer transition-opacity ${selectedImage === image ? 'opacity-100 ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
