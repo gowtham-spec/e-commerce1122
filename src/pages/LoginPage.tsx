@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,13 +16,17 @@ const LoginPage = () => {
   
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get redirect path from state
+  const from = location.state?.from || '/';
   
   // Redirect if already logged in
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate(from);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, from]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +55,11 @@ const LoginPage = () => {
   return (
     <div className="container max-w-md mx-auto py-12 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Sign In to Your Account</h1>
+        <h1 className="text-3xl font-bold valuemarket-text-gradient">Sign In to ValueMarket</h1>
         <p className="text-muted-foreground mt-2">
-          Welcome back to TradeMarket
+          {from === '/checkout' 
+            ? 'Sign in to complete your purchase' 
+            : 'Welcome back to ValueMarket'}
         </p>
       </div>
       
@@ -93,7 +99,7 @@ const LoginPage = () => {
           />
         </div>
         
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full btn-gradient" disabled={isLoading}>
           {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>
       </form>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,8 +23,10 @@ import {
 } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Lock, CreditCard, Truck, ChevronRight } from 'lucide-react';
+import { Lock, CreditCard, Truck, ChevronRight, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from '@/integrations/supabase/client';
 
 const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -47,7 +49,7 @@ const CheckoutPage = () => {
     country: 'US'
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
+  const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     nameOnCard: '',
@@ -57,6 +59,19 @@ const CheckoutPage = () => {
 
   const [orderNotes, setOrderNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to complete your purchase",
+        variant: "destructive",
+      });
+      navigate('/login', { state: { from: '/checkout' } });
+    }
+  }, [isAuthenticated, navigate, toast]);
 
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,7 +88,44 @@ const CheckoutPage = () => {
     setCardDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const createStripeSession = async () => {
+    try {
+      setIsRedirecting(true);
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          success_url: window.location.origin + '/order-confirmation',
+          cancel_url: window.location.origin + '/checkout'
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Redirect to Stripe
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Stripe checkout error:', error);
+      setIsRedirecting(false);
+      toast({
+        title: "Payment Error",
+        description: "There was an error processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
@@ -104,21 +156,23 @@ const CheckoutPage = () => {
         });
         return;
       }
+      
+      // Process with direct credit card
+      setIsProcessing(true);
+      // Simulate API call
+      setTimeout(() => {
+        toast({
+          title: "Order Placed Successfully!",
+          description: "Thank you for your purchase. Your order has been confirmed.",
+        });
+        clearCart();
+        navigate('/order-confirmation');
+        setIsProcessing(false);
+      }, 2000);
+    } else if (paymentMethod === 'stripe') {
+      // Process with Stripe
+      await createStripeSession();
     }
-
-    // Process order
-    setIsProcessing(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Order Placed Successfully!",
-        description: "Thank you for your purchase. Your order has been confirmed.",
-      });
-      clearCart();
-      navigate('/order-confirmation');
-      setIsProcessing(false);
-    }, 2000);
   };
 
   // Calculate totals
@@ -134,6 +188,23 @@ const CheckoutPage = () => {
         <p className="mb-6">Add items to your cart before checking out.</p>
         <Button asChild>
           <Link to="/products">Browse Products</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto py-16 px-4 text-center">
+        <Alert className="max-w-md mx-auto">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertDescription>
+            Please sign in to complete your purchase.
+          </AlertDescription>
+        </Alert>
+        <Button asChild className="mt-6">
+          <Link to="/login">Sign In</Link>
         </Button>
       </div>
     );
@@ -155,9 +226,9 @@ const CheckoutPage = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Checkout form */}
         <div className="lg:w-2/3">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form id="checkout-form" onSubmit={handleSubmit} className="space-y-8">
             {/* Contact information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -206,7 +277,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Shipping information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -272,7 +343,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Payment information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
               <RadioGroup
                 value={paymentMethod}
@@ -280,15 +351,18 @@ const CheckoutPage = () => {
                 className="space-y-4"
               >
                 <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="stripe" id="stripe" />
+                  <Label htmlFor="stripe" className="flex items-center">
+                    <CreditCard className="h-5 w-5 mr-2" />
+                    Pay with Stripe
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
                   <RadioGroupItem value="credit-card" id="credit-card" />
                   <Label htmlFor="credit-card" className="flex items-center">
                     <CreditCard className="h-5 w-5 mr-2" />
                     Credit/Debit Card
                   </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="paypal" id="paypal" />
-                  <Label htmlFor="paypal">PayPal</Label>
                 </div>
               </RadioGroup>
 
@@ -338,10 +412,18 @@ const CheckoutPage = () => {
                   </div>
                 </div>
               )}
+              
+              {paymentMethod === 'stripe' && (
+                <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-md">
+                  <p className="text-sm text-purple-800 dark:text-purple-300">
+                    You'll be redirected to Stripe to complete your purchase securely.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Order notes */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Order Notes</h2>
               <div className="space-y-2">
                 <Label htmlFor="orderNotes">Additional Information</Label>
@@ -383,11 +465,13 @@ const CheckoutPage = () => {
                 <CardFooter>
                   <Button 
                     type="submit" 
-                    className="w-full" 
-                    disabled={isProcessing}
+                    className="w-full btn-gradient" 
+                    disabled={isProcessing || isRedirecting}
                   >
                     {isProcessing ? (
                       <>Processing Order...</>
+                    ) : isRedirecting ? (
+                      <>Redirecting to Stripe...</>
                     ) : (
                       <>
                         <Lock className="h-4 w-4 mr-2" />
@@ -404,7 +488,7 @@ const CheckoutPage = () => {
         {/* Order summary */}
         <div className="lg:w-1/3 hidden lg:block">
           <div className="sticky top-24">
-            <Card>
+            <Card className="card-gradient">
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
@@ -462,12 +546,14 @@ const CheckoutPage = () => {
                 <Button 
                   type="submit"
                   form="checkout-form"
-                  className="w-full" 
-                  disabled={isProcessing}
+                  className="w-full btn-gradient" 
+                  disabled={isProcessing || isRedirecting}
                   onClick={handleSubmit}
                 >
                   {isProcessing ? (
                     <>Processing Order...</>
+                  ) : isRedirecting ? (
+                    <>Redirecting to Stripe...</>
                   ) : (
                     <>
                       <Lock className="h-4 w-4 mr-2" />

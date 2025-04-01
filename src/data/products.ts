@@ -1,4 +1,3 @@
-
 export type Product = {
   id: string;
   name: string;
@@ -228,6 +227,118 @@ export const products: Product[] = [
     featured: false,
     brand: "SleepWell",
     tags: ["sofa", "sleeper", "convertible", "guest bed"]
+  },
+  
+  // Mobile Phones Category
+  {
+    id: "mobile-smartphone-1",
+    name: "Ultra Pro Smartphone",
+    description: "Flagship smartphone with 6.7-inch AMOLED display, 108MP camera system, 5G connectivity, and all-day battery life. Includes the latest AI features for enhanced photography and productivity.",
+    price: 999.99,
+    category: "electronics",
+    subcategory: "smartphones",
+    images: [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=1200",
+      "https://images.unsplash.com/photo-1605236453806-6ff36851218e?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 342,
+    stock: 45,
+    featured: true,
+    brand: "TechGiant",
+    tags: ["smartphone", "mobile", "5G", "camera"]
+  },
+  {
+    id: "mobile-smartphone-2",
+    name: "Mini Lite Smartphone",
+    description: "Compact 5.4-inch smartphone with premium build quality, dual camera system, and fast charging capability. Perfect for one-handed use without compromising on performance.",
+    price: 699.99,
+    category: "electronics",
+    subcategory: "smartphones",
+    images: [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200",
+      "https://images.unsplash.com/photo-1623126908029-58c31ac6eb6e?q=80&w=1200"
+    ],
+    rating: 4.6,
+    reviewCount: 187,
+    stock: 62,
+    featured: false,
+    brand: "TechGiant",
+    tags: ["smartphone", "mobile", "compact", "lightweight"]
+  },
+  {
+    id: "mobile-smartphone-3",
+    name: "Value Z Phone",
+    description: "Mid-range smartphone with impressive specs at an affordable price. Features a 6.5-inch display, 64MP main camera, large battery, and expandable storage.",
+    price: 349.99,
+    category: "electronics",
+    subcategory: "smartphones",
+    images: [
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?q=80&w=1200",
+      "https://images.unsplash.com/photo-1598965402089-897c5de12065?q=80&w=1200"
+    ],
+    rating: 4.5,
+    reviewCount: 256,
+    stock: 89,
+    featured: true,
+    brand: "ValueTech",
+    tags: ["smartphone", "mobile", "budget", "value"]
+  },
+  
+  // Laptops Category
+  {
+    id: "laptop-ultrabook-1",
+    name: "ProBook Ultra Slim",
+    description: "Flagship ultrabook with 14-inch 4K display, latest processor, 16GB RAM, and 1TB SSD. Weighs just 2.6 pounds with up to 18 hours of battery life.",
+    price: 1499.99,
+    category: "electronics",
+    subcategory: "laptops",
+    images: [
+      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1200",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200"
+    ],
+    rating: 4.9,
+    reviewCount: 176,
+    stock: 27,
+    featured: true,
+    brand: "TechPro",
+    tags: ["laptop", "ultrabook", "lightweight", "premium"]
+  },
+  {
+    id: "laptop-gaming-1",
+    name: "Gaming Powerhouse RTX",
+    description: "Powerful gaming laptop with 17-inch high-refresh display, RGB keyboard, latest graphics card, and advanced cooling system. Designed for immersive gaming experience.",
+    price: 1899.99,
+    category: "electronics",
+    subcategory: "laptops",
+    images: [
+      "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=1200",
+      "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=1200"
+    ],
+    rating: 4.7,
+    reviewCount: 134,
+    stock: 18,
+    featured: true,
+    brand: "GameForce",
+    tags: ["laptop", "gaming", "RTX", "high-performance"]
+  },
+  {
+    id: "laptop-budget-1",
+    name: "Everyday Laptop",
+    description: "Affordable laptop for everyday tasks with 15.6-inch display, reliable performance, and long battery life. Perfect for students and casual users.",
+    price: 549.99,
+    category: "electronics",
+    subcategory: "laptops",
+    images: [
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=1200",
+      "https://images.unsplash.com/photo-1542393545-10f5cde2c810?q=80&w=1200"
+    ],
+    rating: 4.3,
+    reviewCount: 289,
+    stock: 54,
+    featured: false,
+    brand: "ValueTech",
+    tags: ["laptop", "budget", "everyday", "student"]
   }
 ];
 
@@ -253,6 +364,17 @@ export const categories: Category[] = [
       { id: "acs", name: "Air Conditioners" },
       { id: "refrigerators", name: "Refrigerators" },
       { id: "sofas", name: "Sofas & Seating" }
+    ]
+  },
+  {
+    id: "electronics",
+    name: "Electronics",
+    description: "Latest smartphones, laptops, and gadgets with cutting-edge technology.",
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1200",
+    subcategories: [
+      { id: "smartphones", name: "Smartphones" },
+      { id: "laptops", name: "Laptops" },
+      { id: "accessories", name: "Accessories" }
     ]
   }
 ];
