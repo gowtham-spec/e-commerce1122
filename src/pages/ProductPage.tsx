@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -25,8 +24,8 @@ const ProductPage = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { addToCart } = useCart();
-  const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
+  const { addItem } = useCart();
+  const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlist();
   const [selectedImage, setSelectedImage] = useState(0);
   
   const { data: product, isLoading, error } = useQuery({
@@ -37,7 +36,7 @@ const ProductPage = () => {
   
   const handleAddToCart = () => {
     if (product) {
-      addToCart({
+      addItem({
         id: product.id,
         name: product.name,
         price: product.price,
@@ -58,7 +57,7 @@ const ProductPage = () => {
     const inWishlist = isInWishlist(product.id);
     
     if (inWishlist) {
-      removeFromWishlist(product.id);
+      removeItem(product.id);
       toast({
         title: "Removed from wishlist",
         description: `${product.name} has been removed from your wishlist`,
