@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,17 +20,13 @@ const RegisterPage = () => {
   
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Get redirect path from state
-  const from = location.state?.from || '/';
   
   // Redirect if already logged in
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from);
+      navigate('/');
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,11 +66,9 @@ const RegisterPage = () => {
   return (
     <div className="container max-w-md mx-auto py-12 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold valuemarket-text-gradient">Create a ValueMarket Account</h1>
+        <h1 className="text-3xl font-bold">Create an Account</h1>
         <p className="text-muted-foreground mt-2">
-          {from === '/checkout' 
-            ? 'Sign up to complete your purchase' 
-            : 'Join ValueMarket and start shopping today'}
+          Join TradeMarket and start shopping today
         </p>
       </div>
       
@@ -149,7 +143,7 @@ const RegisterPage = () => {
           </Label>
         </div>
         
-        <Button type="submit" className="w-full btn-gradient" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? 'Creating Account...' : 'Create Account'}
         </Button>
       </form>
