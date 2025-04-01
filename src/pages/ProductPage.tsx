@@ -1,294 +1,195 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { Star, ChevronRight, ShoppingCart, Heart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
-import { ShoppingCart, Heart, ArrowLeft, Star, Sparkles } from 'lucide-react';
+import { getProductById, Product, getProductsByCategory } from '@/data/products';
+import ProductCard from '@/components/ProductCard';
 
-const fetchProduct = async (productId: string) => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*, product_images(*)')
-    .eq('id', productId)
-    .single();
-  
-  if (error) throw error;
-  return data;
-};
-
-const ProductPage = () => {
+const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string>('');
+  const [quantity, setQuantity] = useState<number>(1);
   const { addItem } = useCart();
   const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlist();
-  const [selectedImage, setSelectedImage] = useState(0);
-  
-  const { data: product, isLoading, error } = useQuery({
-    queryKey: ['product', productId],
-    queryFn: () => fetchProduct(productId!),
-    enabled: !!productId,
-  });
-  
+
+  useEffect(() => {
+    if (productId) {
+      const foundProduct = getProductById(productId);
+      
+      if (foundProduct) {
+        setProduct(foundProduct);
+        setSelectedImage(foundProduct.images[0]);
+        
+        // Get related products from the same category
+        const related = getProductsByCategory(foundProduct.category)
+          .filter(p => p.id !== foundProduct.id)
+          .slice(0, 4);
+        setRelatedProducts(related);
+      }
+    }
+  }, [productId]);
+
   const handleAddToCart = () => {
     if (product) {
       addItem({
         id: product.id,
         name: product.name,
         price: product.price,
-        quantity: 1,
-        image: product.product_images?.[0]?.url || '',
-      });
-      
-      toast({
-        title: "Added to cart",
-        description: `${product.name} has been added to your cart`,
+        image: product.images[0],
+        quantity: quantity,
+        category: product.category
       });
     }
   };
-  
-  const handleToggleWishlist = () => {
+
+  const handleWishlistToggle = () => {
     if (!product) return;
     
-    const inWishlist = isInWishlist(product.id);
+    const isWishlisted = isInWishlist(product.id);
     
-    if (inWishlist) {
-      removeItem(product.id);
-      toast({
-        title: "Removed from wishlist",
-        description: `${product.name} has been removed from your wishlist`,
-      });
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
     } else {
       addToWishlist({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.product_images?.[0]?.url || '',
-      });
-      
-      toast({
-        title: "Added to wishlist",
-        description: `${product.name} has been added to your wishlist`,
+        image: product.images[0],
+        category: product.category
       });
     }
   };
-  
-  if (isLoading) {
+
+  if (!product) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded w-1/3 mx-auto mb-4"></div>
-          <div className="h-80 bg-muted rounded mb-4"></div>
-          <div className="h-4 bg-muted rounded w-2/3 mx-auto mb-2"></div>
-          <div className="h-4 bg-muted rounded w-1/2 mx-auto mb-2"></div>
-        </div>
+      <div className="container mx-auto py-12 px-4">
+        <p>Product not found</p>
       </div>
     );
   }
-  
-  if (error || !product) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <p className="text-red-500 mb-4">Failed to load product details</p>
-        <Button variant="outline" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Go Back
-        </Button>
-      </div>
-    );
-  }
-  
-  const productImages = product.product_images || [];
-  const mainImage = productImages[selectedImage]?.url || '';
-  
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8"
-    >
-      <Button 
-        variant="ghost" 
-        className="mb-6"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Products
-      </Button>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="space-y-4">
-          <motion.div 
-            className="aspect-square rounded-lg overflow-hidden bg-muted"
-            layoutId={`product-${product.id}-image`}
-          >
-            {mainImage ? (
-              <motion.img 
-                src={mainImage} 
-                alt={product.name}
-                className="w-full h-full object-cover"
-                initial={{ scale: 1 }}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              />
-            ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
-                No image available
-              </div>
-            )}
-          </motion.div>
-          
-          {productImages.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {productImages.map((image, index) => (
-                <motion.button
-                  key={image.id}
-                  className={`relative rounded-md overflow-hidden w-16 h-16 flex-shrink-0 ${
-                    selectedImage === index ? 'ring-2 ring-primary' : ''
-                  }`}
-                  onClick={() => setSelectedImage(index)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <img 
-                    src={image.url} 
-                    alt={`${product.name} - view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </motion.button>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-6">
-          <motion.h1 
-            className="text-3xl font-bold"
-            layoutId={`product-${product.id}-title`}
-          >
-            {product.name}
-          </motion.h1>
-          
-          <motion.div 
-            className="flex items-center gap-2"
-            layoutId={`product-${product.id}-price`}
-          >
-            <span className="text-2xl font-semibold">${product.price.toFixed(2)}</span>
-            {product.stock > 0 ? (
-              <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                In Stock
-              </span>
-            ) : (
-              <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-                Out of Stock
-              </span>
-            )}
-          </motion.div>
-          
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`h-5 w-5 ${
-                  i < (product.rating || 0) 
-                    ? 'text-yellow-400 fill-yellow-400' 
-                    : 'text-gray-300'
-                }`} 
+    <div className="container mx-auto py-12 px-4">
+      <div className="md:flex md:gap-8">
+        <div className="md:w-1/2">
+          <div className="relative mb-4">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              className="w-full h-auto rounded-md aspect-square object-cover"
+            />
+          </div>
+          <div className="flex gap-2 overflow-x-auto">
+            {product.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`${product.name} - Image ${index + 1}`}
+                className="w-20 h-20 rounded-md object-cover cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+                onClick={() => setSelectedImage(image)}
               />
             ))}
-            <span className="text-sm text-muted-foreground ml-2">
-              {product.rating} out of 5
+          </div>
+        </div>
+
+        <div className="md:w-1/2">
+          <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
+          <p className="text-sm text-muted-foreground mb-4">{product.brand}</p>
+
+          <div className="flex items-center mb-4">
+            <Star className="h-5 w-5 text-yellow-500 fill-yellow-500 mr-1" />
+            <span className="text-gray-600">
+              {product.rating} ({product.reviewCount} reviews)
             </span>
           </div>
-          
-          <motion.p 
-            className="text-muted-foreground"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {product.description || 'No description available'}
-          </motion.p>
-          
-          {product.colors && product.colors.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="font-medium">Colors</h3>
-              <div className="flex gap-2">
-                {product.colors.map((color) => (
-                  <motion.button
-                    key={color}
-                    className={`w-8 h-8 rounded-full border`}
-                    style={{ backgroundColor: color }}
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.95 }}
-                  />
-                ))}
-              </div>
+
+          <div className="space-y-2 mb-4">
+            <p className="text-gray-700">${product.price.toFixed(2)}</p>
+            <p className="text-gray-600">{product.description}</p>
+          </div>
+
+          <Separator className="my-4" />
+
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="flex items-center border rounded-md overflow-hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+              >
+                -
+              </Button>
+              <span className="px-3">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setQuantity(prev => prev + 1)}
+              >
+                +
+              </Button>
             </div>
-          )}
-          
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="font-medium">Sizes</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <motion.button
-                    key={size}
-                    className="border rounded px-3 py-1 text-sm"
-                    whileHover={{ scale: 1.05, backgroundColor: 'rgba(var(--primary), 0.1)' }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {size}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button 
-              className="flex-1 gap-2"
-              onClick={handleAddToCart}
-              disabled={product.stock <= 0}
-            >
-              <ShoppingCart className="h-4 w-4" />
+
+            <Button className="flex-1" onClick={handleAddToCart}>
+              <ShoppingCart className="h-4 w-4 mr-2" />
               Add to Cart
             </Button>
-            
-            <Button 
-              variant="outline" 
-              className="flex-1 gap-2"
-              onClick={handleToggleWishlist}
-            >
-              <Heart 
-                className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} 
-              />
-              {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+
+            <Button variant="outline" size="icon" onClick={handleWishlistToggle}>
+              {isInWishlist(product.id) ? (
+                <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+              ) : (
+                <Heart className="h-4 w-4" />
+              )}
             </Button>
           </div>
-          
-          <motion.div 
-            className="border rounded-lg p-4 mt-6 bg-muted/30 flex items-start gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-medium text-sm">AI Recommendation</h3>
-              <p className="text-sm text-muted-foreground">
-                Based on your browsing history, you might also like products in the {product.category} category.
-              </p>
-            </div>
-          </motion.div>
+
+          <Separator className="my-4" />
+
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList>
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="details">Details</TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="mt-4">
+              <p className="text-gray-600">{product.description}</p>
+            </TabsContent>
+            <TabsContent value="details" className="mt-4">
+              <ul className="list-disc pl-5">
+                <li>Category: {product.category}</li>
+                <li>Subcategory: {product.subcategory}</li>
+                <li>Brand: {product.brand}</li>
+                <li>Rating: {product.rating} stars</li>
+                <li>Stock: {product.stock}</li>
+              </ul>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-    </motion.div>
+
+      <Separator className="my-8" />
+
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Related Products</h2>
+        {relatedProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {relatedProducts.map((relatedProduct) => (
+              <ProductCard key={relatedProduct.id} product={relatedProduct} />
+            ))}
+          </div>
+        ) : (
+          <p>No related products found.</p>
+        )}
+      </div>
+    </div>
   );
 };
 
