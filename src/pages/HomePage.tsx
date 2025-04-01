@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ProductCard from '@/components/ProductCard';
 import FeaturedCarousel from '@/components/FeaturedCarousel';
 import ScrollingTags from '@/components/ScrollingTags';
+import TodayDeals from '@/components/TodayDeals';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,7 @@ const HomePage = () => {
           size="icon"
           onClick={toggleTheme}
           aria-label="Toggle theme"
+          className="bg-purple-100/50 dark:bg-purple-900/20 hover:bg-purple-200/50 dark:hover:bg-purple-800/30 text-purple-800 dark:text-purple-300"
         >
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
@@ -60,12 +62,12 @@ const HomePage = () => {
       
       <div className="my-12 text-center">
         <motion.h1 
-          className="text-3xl md:text-4xl font-bold mb-2"
+          className="text-3xl md:text-4xl font-bold mb-2 purple-gradient-text"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Welcome to TradeMarket
+          Welcome to ValueMarket
         </motion.h1>
         <motion.p 
           className="text-muted-foreground max-w-2xl mx-auto"
@@ -78,6 +80,9 @@ const HomePage = () => {
         
         <ScrollingTags />
       </div>
+      
+      {/* Add Today's Deals section */}
+      <TodayDeals />
       
       <section className="my-12">
         <div className="flex justify-between items-center mb-6">
@@ -105,8 +110,14 @@ const HomePage = () => {
             {products?.map((product) => (
               <motion.div key={product.id} variants={item}>
                 <ProductCard 
-                  product={product} 
-                  layoutId={`product-${product.id}`}
+                  product={{
+                    ...product,
+                    images: product.product_images.map((img: any) => img.url),
+                    reviewCount: 42,
+                    featured: true,
+                    brand: product.name.split(' ')[0], // Using first word as brand for demo
+                    tags: [product.category, product.subcategory]
+                  }}
                 />
               </motion.div>
             ))}

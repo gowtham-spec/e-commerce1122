@@ -22,6 +22,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import DealsPage from "./pages/DealsPage";
 import NotFound from "./pages/NotFound";
 import AIAssistantChat from "./components/AIAssistantChat";
 
@@ -52,6 +53,7 @@ const App = () => (
                       <Route path="/reset-password" element={<ResetPasswordPage />} />
                       <Route path="/checkout" element={<CheckoutPage />} />
                       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                      <Route path="/deals" element={<DealsPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>
