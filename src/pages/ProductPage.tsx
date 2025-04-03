@@ -13,6 +13,7 @@ import ProductCard from '@/components/ProductCard';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 // Ensure every product has at least 3 images
 const ensureMultipleImages = (product: Product) => {
@@ -125,12 +126,15 @@ const ProductPage: React.FC = () => {
     <div className="container mx-auto py-12 px-4 font-poppins">
       <div className="md:flex md:gap-8">
         <div className="md:w-1/2">
+          {/* Main Product Image */}
           <div className="relative mb-4 border border-gray-200 rounded-lg overflow-hidden">
-            <img
-              src={selectedImage}
-              alt={product.name}
-              className="w-full h-auto rounded-md aspect-square object-contain p-8"
-            />
+            <AspectRatio ratio={1/1} className="bg-white">
+              <img
+                src={selectedImage}
+                alt={product.name}
+                className="w-full h-full object-contain p-6"
+              />
+            </AspectRatio>
             {product.stock <= 5 && product.stock > 0 && (
               <Badge className="absolute top-4 left-4 bg-orange-500">Limited Stock</Badge>
             )}
@@ -143,15 +147,27 @@ const ProductPage: React.FC = () => {
               <Badge className="absolute top-4 right-4 bg-primary">Featured</Badge>
             )}
           </div>
-          <div className="flex gap-3 overflow-x-auto">
+          
+          {/* Thumbnails Side by Side */}
+          <div className="grid grid-cols-3 gap-2">
             {product.images.map((image, index) => (
-              <img
+              <div 
                 key={index}
-                src={image}
-                alt={`${product.name} - Image ${index + 1}`}
-                className={`w-20 h-20 rounded-md object-contain cursor-pointer transition-opacity p-2 ${selectedImage === image ? 'opacity-100 ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
+                className={`border rounded-md cursor-pointer transition-all ${
+                  selectedImage === image 
+                    ? 'border-primary ring-2 ring-primary' 
+                    : 'border-gray-200 hover:border-gray-400'
+                }`}
                 onClick={() => setSelectedImage(image)}
-              />
+              >
+                <AspectRatio ratio={1/1} className="bg-white">
+                  <img
+                    src={image}
+                    alt={`${product.name} - Image ${index + 1}`}
+                    className="w-full h-full object-contain p-2"
+                  />
+                </AspectRatio>
+              </div>
             ))}
           </div>
         </div>
