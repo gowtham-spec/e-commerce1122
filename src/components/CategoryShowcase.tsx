@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shirt, Laptop, ToyBrick, Tools } from 'lucide-react';
+import { ArrowRight, Shirt, Laptop, ToyBrick, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Category } from '@/data/products';
 import { getProductsByCategory } from '@/data/products';
@@ -23,7 +23,7 @@ const CategoryIcon = ({ categoryId, className = "h-5 w-5" }: CategoryIconProps) 
     case 'toys':
       return <ToyBrick className={className} />;
     case 'tools':
-      return <Tools className={className} />;
+      return <Wrench className={className} />;
     default:
       return <ArrowRight className={className} />;
   }
