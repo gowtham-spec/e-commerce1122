@@ -24,7 +24,7 @@ const AIAssistantChat = () => {
     {
       id: '1',
       type: 'bot',
-      text: 'Hi there! How can I help you today?',
+      text: 'Hi there! How can I help you with your shopping today?',
       timestamp: new Date()
     }
   ]);
@@ -48,7 +48,7 @@ const AIAssistantChat = () => {
       const greeting = {
         id: Date.now().toString(),
         type: 'bot' as const,
-        text: `Hello ${user.name || 'there'}! How can I assist you with your shopping today?`,
+        text: `Hello ${user.name || 'there'}! I'm your shopping assistant. What can I help you find today?`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, greeting]);
@@ -163,9 +163,9 @@ const AIAssistantChat = () => {
         response = "We have stylish furniture for every room. Let me show you our furniture collection.";
         action = () => navigate('/category/furniture');
       }
-      else if (lowerQuery.includes('tool') || lowerQuery.includes('hardware') || lowerQuery.includes('drill')) {
-        response = "Looking for tools? I can help you find the right tools for your project.";
-        action = () => navigate('/category/tools');
+      else if (lowerQuery.includes('stationary') || lowerQuery.includes('office supplies') || lowerQuery.includes('pen')) {
+        response = "Looking for stationary or office supplies? I can help you find what you need.";
+        action = () => navigate('/category/stationary');
       }
       else if (lowerQuery.includes('accessory') || lowerQuery.includes('accessories') || lowerQuery.includes('watch') || lowerQuery.includes('bag') || lowerQuery.includes('belt')) {
         response = "Our accessories collection includes watches, bags, belts, and more. Let me show you.";
@@ -189,11 +189,11 @@ const AIAssistantChat = () => {
       else {
         // Generic responses for other queries
         const genericResponses = [
-          "I can help you find products, check prices, or explore categories. What are you interested in?",
-          "Would you like me to recommend popular items in a specific category?",
-          "I can show you our best deals or help you find a specific product. What would you prefer?",
-          "I'm here to assist with your shopping. Would you like to see our featured products?",
-          "How can I help with your shopping today? I can find products, check availability, or show you deals."
+          "How can I help with your shopping today? Looking for something specific?",
+          "Would you like me to recommend some popular items or help you find a specific product?",
+          "I can show you our best deals or help you search for products. What would you prefer?",
+          "I'm here to assist with your shopping. Do you have something particular in mind?",
+          "How may I assist you today? I can help find products, suggest alternatives, or show you our latest deals."
         ];
         
         response = genericResponses[Math.floor(Math.random() * genericResponses.length)];
@@ -253,7 +253,7 @@ const AIAssistantChat = () => {
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
-                <h3 className="font-medium">AI Shopping Assistant</h3>
+                <h3 className="font-medium">Shopping Assistant</h3>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                 <X className="h-4 w-4" />
@@ -283,25 +283,16 @@ const AIAssistantChat = () => {
                 variant="outline" 
                 size="sm" 
                 className="flex items-center gap-1 whitespace-nowrap"
-                onClick={() => processUserQuery("Show clothing items")}
+                onClick={() => processUserQuery("Show all products")}
               >
                 <Search className="h-3 w-3" />
-                Clothing
+                All Products
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="flex items-center gap-1 whitespace-nowrap"
-                onClick={() => processUserQuery("Show electronics")}
-              >
-                <Search className="h-3 w-3" />
-                Electronics
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-1 whitespace-nowrap"
-                onClick={() => processUserQuery("Show accessories")}
+                onClick={() => processUserQuery("Help me find accessories")}
               >
                 <Search className="h-3 w-3" />
                 Accessories

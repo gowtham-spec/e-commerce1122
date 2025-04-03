@@ -150,43 +150,18 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Category navigation - desktop */}
-        <nav className="hidden md:flex mt-4 space-x-6 overflow-x-auto pb-2">
-          {categories.map((category) => (
-            <div key={category.id} className="relative group">
-              <Link 
-                to={`/category/${category.id}`}
-                className={`font-medium whitespace-nowrap transition-colors ${
-                  theme === 'dark' 
-                    ? 'text-gray-300 hover:text-purple-400' 
-                    : 'text-gray-700 hover:text-primary'
-                }`}
-              >
-                {category.name}
-              </Link>
-              <div className="absolute hidden group-hover:block pt-2 z-10">
-                <div className={`${
-                  theme === 'dark' 
-                    ? 'bg-gray-800 shadow-md shadow-black/20' 
-                    : 'bg-white shadow-md'
-                  } rounded-md overflow-hidden py-2`}>
-                  {category.subcategories.map((subcategory) => (
-                    <Link 
-                      key={subcategory.id} 
-                      to={`/category/${category.id}/${subcategory.id}`}
-                      className={`block px-4 py-2 text-sm whitespace-nowrap ${
-                        theme === 'dark'
-                          ? 'text-gray-300 hover:bg-gray-700'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {subcategory.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Main navigation menu - desktop */}
+        <nav className="hidden md:flex mt-4 justify-center space-x-6 overflow-x-auto pb-2">
+          <Link 
+            to="/products"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            All Products
+          </Link>
           <Link 
             to="/deals"
             className={`font-medium whitespace-nowrap transition-colors ${
@@ -197,6 +172,19 @@ const Header = () => {
           >
             Today's Deals
           </Link>
+          {categories.map((category) => (
+            <Link 
+              key={category.id}
+              to={`/category/${category.id}`}
+              className={`font-medium whitespace-nowrap transition-colors ${
+                theme === 'dark' 
+                  ? 'text-gray-300 hover:text-purple-400' 
+                  : 'text-gray-700 hover:text-primary'
+              }`}
+            >
+              {category.name}
+            </Link>
+          ))}
         </nav>
 
         {/* Mobile search bar - only visible on mobile */}

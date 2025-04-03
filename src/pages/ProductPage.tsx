@@ -14,6 +14,20 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
+// Ensure every product has at least 3 images
+const ensureMultipleImages = (product: Product) => {
+  if (product.images.length < 3) {
+    // If the product has fewer than 3 images, duplicate the first image
+    const images = [...product.images];
+    while (images.length < 3) {
+      const nextIndex = images.length % product.images.length;
+      images.push(product.images[nextIndex]);
+    }
+    return { ...product, images };
+  }
+  return product;
+};
+
 const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
@@ -36,21 +50,23 @@ const ProductPage: React.FC = () => {
       const foundProduct = getProductById(productId);
       
       if (foundProduct) {
-        setProduct(foundProduct);
-        setSelectedImage(foundProduct.images[0]);
+        // Ensure the product has multiple images
+        const enhancedProduct = ensureMultipleImages(foundProduct);
+        setProduct(enhancedProduct);
+        setSelectedImage(enhancedProduct.images[0]);
         
         // Set default size and color if available
-        if (foundProduct.sizes && foundProduct.sizes.length > 0) {
-          setSelectedSize(foundProduct.sizes[0]);
+        if (enhancedProduct.sizes && enhancedProduct.sizes.length > 0) {
+          setSelectedSize(enhancedProduct.sizes[0]);
         }
         
-        if (foundProduct.colors && foundProduct.colors.length > 0) {
-          setSelectedColor(foundProduct.colors[0]);
+        if (enhancedProduct.colors && enhancedProduct.colors.length > 0) {
+          setSelectedColor(enhancedProduct.colors[0]);
         }
         
         // Get related products from the same category
-        const related = getProductsByCategory(foundProduct.category)
-          .filter(p => p.id !== foundProduct.id)
+        const related = getProductsByCategory(enhancedProduct.category)
+          .filter(p => p.id !== enhancedProduct.id)
           .slice(0, 4);
         setRelatedProducts(related);
       }
@@ -113,19 +129,27 @@ const ProductPage: React.FC = () => {
             <img
               src={selectedImage}
               alt={product.name}
-              className="w-full h-auto rounded-md aspect-square object-cover"
+              className="w-full h-auto rounded-md aspect-square object-contain p-8"
             />
             {product.stock <= 5 && product.stock > 0 && (
-              <Badge className="absolute top-2 right-2 bg-orange-500">Limited Stock</Badge>
+              <Badge className="absolute top-4 left-4 bg-orange-500">Limited Stock</Badge>
+            )}
+            
+            {product.stock === 0 && (
+              <Badge variant="destructive" className="absolute top-4 left-4">Out of Stock</Badge>
+            )}
+            
+            {product.featured && (
+              <Badge className="absolute top-4 right-4 bg-primary">Featured</Badge>
             )}
           </div>
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-3 overflow-x-auto">
             {product.images.map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`${product.name} - Image ${index + 1}`}
-                className={`w-20 h-20 rounded-md object-cover cursor-pointer transition-opacity ${selectedImage === image ? 'opacity-100 ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
+                className={`w-20 h-20 rounded-md object-contain cursor-pointer transition-opacity p-2 ${selectedImage === image ? 'opacity-100 ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -294,7 +318,7 @@ const ProductPage: React.FC = () => {
         {relatedProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {relatedProducts.map((relatedProduct) => (
-              <ProductCard key={relatedProduct.id} product={relatedProduct} />
+              <ProductCard key={relatedProduct.id} product={ensureMultipleImages(relatedProduct)} />
             ))}
           </div>
         ) : (
