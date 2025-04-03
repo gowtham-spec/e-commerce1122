@@ -49,8 +49,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
   };
 
+  // Format price to Indian Rupees
+  const formatPriceToINR = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price * 83); // Approximate conversion rate from USD to INR
+  };
+
   return (
-    <Card className="h-full overflow-hidden transition-all hover:shadow-md group">
+    <Card className="h-full overflow-hidden transition-all hover:shadow-md group font-poppins">
       <Link to={`/product/${product.id}`} className="block h-full">
         <div className="relative pt-[100%] overflow-hidden bg-gray-100">
           <img
@@ -115,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </CardContent>
         
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
-          <div className="text-lg font-bold">${product.price.toFixed(2)}</div>
+          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{formatPriceToINR(product.price)}</div>
           
           <Button
             size="sm"

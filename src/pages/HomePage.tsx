@@ -2,6 +2,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import ProductCard from '@/components/ProductCard';
 import FeaturedCarousel from '@/components/FeaturedCarousel';
@@ -31,6 +32,7 @@ const fetchProducts = async () => {
 };
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['featured-products'],
@@ -51,9 +53,22 @@ const HomePage = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+  
+  const handleFeatureClick = (feature: string) => {
+    switch(feature) {
+      case 'ai':
+        navigate('/category/electronics');
+        break;
+      case 'search':
+        navigate('/search');
+        break;
+      default:
+        navigate('/');
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 font-poppins">
       <div className="flex justify-end mb-4">
         <Button
           variant="ghost"
@@ -103,7 +118,7 @@ const HomePage = () => {
       <section className="my-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured Products</h2>
-          <Button variant="link">View All</Button>
+          <Button variant="link" as={Link} to="/search">View All</Button>
         </div>
 
         {isLoading ? (
@@ -146,6 +161,8 @@ const HomePage = () => {
           <motion.div
             className="bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg p-8"
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            onClick={() => handleFeatureClick('ai')}
+            role="button"
           >
             <h3 className="text-xl font-semibold mb-3">AI-Powered Shopping</h3>
             <p className="mb-4">Our advanced AI algorithms analyze your preferences to offer personalized product recommendations.</p>
@@ -155,6 +172,8 @@ const HomePage = () => {
           <motion.div
             className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg p-8"
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            onClick={() => handleFeatureClick('search')}
+            role="button"
           >
             <h3 className="text-xl font-semibold mb-3">Multi-Search Technology</h3>
             <p className="mb-4">Find exactly what you're looking for across different categories with our smart search technology.</p>

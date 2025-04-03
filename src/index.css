@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,6 +80,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Poppins', sans-serif;
   }
 }
 
@@ -123,6 +126,11 @@
               0 8px 10px -6px rgba(139, 92, 246, 0.2);
 }
 
+/* Font family utilities */
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
 /* Purple gradient effects */
 .purple-gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400;
@@ -154,6 +162,11 @@
 .dark body {
   @apply bg-gradient-to-b from-gray-900 to-purple-950/40;
   background-attachment: fixed;
+}
+
+/* Dark mode header */
+.dark header {
+  @apply bg-gray-900 text-white border-gray-800;
 }
 
 .hover-shadow-purple-lg {

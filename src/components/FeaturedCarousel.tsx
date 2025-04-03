@@ -85,7 +85,6 @@ const FeaturedCarousel = () => {
   };
 
   const handleGetStarted = (path: string) => {
-    // We're now skipping the login check since user is already authenticated
     navigate(path);
   };
 
@@ -99,11 +98,22 @@ const FeaturedCarousel = () => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className={`absolute inset-0 flex flex-col md:flex-row items-center justify-between p-8 text-center md:text-left bg-gradient-to-r ${carouselItems[currentIndex].bgColor} ${carouselItems[currentIndex].textColor} overflow-hidden`}
+          className="absolute inset-0 overflow-hidden"
         >
-          <div className="z-10 max-w-lg">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{carouselItems[currentIndex].title}</h2>
-            <p className="text-lg opacity-90 max-w-md mb-6">{carouselItems[currentIndex].description}</p>
+          {/* Background image that fills entire container */}
+          <img 
+            src={carouselItems[currentIndex].image} 
+            alt={carouselItems[currentIndex].title}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          
+          {/* Overlay for better text visibility */}
+          <div className="absolute inset-0 bg-black/50"></div>
+          
+          {/* Content positioned at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 font-poppins">{carouselItems[currentIndex].title}</h2>
+            <p className="text-lg opacity-90 max-w-md mb-4">{carouselItems[currentIndex].description}</p>
             <Button 
               onClick={() => handleGetStarted(carouselItems[currentIndex].path)}
               className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white group"
@@ -111,14 +121,6 @@ const FeaturedCarousel = () => {
               Get Started
               <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
             </Button>
-          </div>
-          <div className="hidden md:block w-1/3 h-full relative overflow-hidden rounded-lg">
-            <div className="absolute inset-0 bg-black/20"></div>
-            <img 
-              src={carouselItems[currentIndex].image} 
-              alt={carouselItems[currentIndex].title} 
-              className="w-full h-full object-cover object-center"
-            />
           </div>
         </motion.div>
       </AnimatePresence>

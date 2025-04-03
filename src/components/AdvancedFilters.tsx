@@ -12,8 +12,17 @@ import {
   Sparkles, 
   Star,
   Zap,
-  Filter
+  Filter,
+  ArrowUpDown
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AdvancedFiltersProps {
   onApplyFilters: (filters: any) => void;
@@ -21,7 +30,7 @@ interface AdvancedFiltersProps {
 
 const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onApplyFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 100000]);
   const [sortBy, setSortBy] = useState('relevance');
   const [useAI, setUseAI] = useState(true);
   const [inStock, setInStock] = useState(false);
@@ -35,8 +44,16 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onApplyFilters }) => 
     });
   };
   
+  const formatPriceToINR = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+  
   return (
-    <div className="mb-6">
+    <div className="mb-6 font-poppins">
       <div className="flex justify-between items-center mb-4">
         <Button 
           variant="outline" 
@@ -48,40 +65,46 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onApplyFilters }) => 
         </Button>
         
         <div className="flex items-center gap-2">
-          <Button 
-            variant={sortBy === 'relevance' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setSortBy('relevance')}
-            className="flex items-center gap-1"
-          >
-            <Star className="h-4 w-4" />
-            <span className="hidden sm:inline">Relevance</span>
-          </Button>
-          <Button 
-            variant={sortBy === 'newest' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setSortBy('newest')}
-            className="flex items-center gap-1"
-          >
-            <Calendar className="h-4 w-4" />
-            <span className="hidden sm:inline">Newest</span>
-          </Button>
-          <Button 
-            variant={sortBy === 'price-asc' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setSortBy('price-asc')}
-            className="flex items-center"
-          >
-            <SortAsc className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant={sortBy === 'price-desc' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setSortBy('price-desc')}
-            className="flex items-center"
-          >
-            <SortDesc className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4" />
+                <span>Sort</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className={sortBy === 'relevance' ? 'bg-muted' : ''} 
+                onClick={() => setSortBy('relevance')}
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Relevance
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className={sortBy === 'newest' ? 'bg-muted' : ''} 
+                onClick={() => setSortBy('newest')}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Newest
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className={sortBy === 'price-asc' ? 'bg-muted' : ''} 
+                onClick={() => setSortBy('price-asc')}
+              >
+                <SortAsc className="h-4 w-4 mr-2" />
+                Price: Low to High
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className={sortBy === 'price-desc' ? 'bg-muted' : ''} 
+                onClick={() => setSortBy('price-desc')}
+              >
+                <SortDesc className="h-4 w-4 mr-2" />
+                Price: High to Low
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
@@ -94,18 +117,18 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onApplyFilters }) => 
         <div className="bg-background border rounded-lg p-4 mb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-medium">Price Range</h3>
+              <h3 className="font-medium">Price Range (₹)</h3>
               <Slider
-                defaultValue={[0, 1000]}
-                max={1000}
-                step={10}
+                defaultValue={[0, 100000]}
+                max={100000}
+                step={1000}
                 value={priceRange}
                 onValueChange={setPriceRange}
                 className="my-6"
               />
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
+                <span>{formatPriceToINR(priceRange[0])}</span>
+                <span>{formatPriceToINR(priceRange[1])}</span>
               </div>
             </div>
             
@@ -149,7 +172,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onApplyFilters }) => 
           </div>
           
           <div className="flex justify-end mt-6">
-            <Button onClick={handleApplyFilters}>
+            <Button onClick={handleApplyFilters} className="bg-purple-gradient">
               Apply Filters
             </Button>
           </div>
