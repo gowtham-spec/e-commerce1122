@@ -10,7 +10,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -26,16 +25,16 @@ import {
   filterProducts, 
   getProductsByCategory, 
   categories, 
-  getProductsBySubcategory 
+  getProductsBySubcategory,
+  products as allProducts
 } from '@/data/products';
 import { ChevronDown, ChevronRight, Filter, SlidersHorizontal } from 'lucide-react';
 
 const CategoryPage = () => {
   const { categoryId, subcategoryId } = useParams<{ categoryId: string; subcategoryId: string }>();
-  const [products, setProducts] = useState(categoryId ? getProductsByCategory(categoryId) : []);
+  const [products, setProducts] = useState(categoryId ? getProductsByCategory(categoryId) : allProducts);
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [sortOption, setSortOption] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   
@@ -46,21 +45,14 @@ const CategoryPage = () => {
   // Generate unique brands from products
   const uniqueBrands = [...new Set(products.map(product => product.brand))];
   
-  // Get min/max price
-  const minPrice = Math.min(...products.map(p => p.price));
-  const maxPrice = Math.max(...products.map(p => p.price));
-  
-  // Set price range on mount
-  useEffect(() => {
-    setPriceRange([minPrice, maxPrice]);
-  }, [minPrice, maxPrice]);
-  
   // Update products when category or subcategory changes
   useEffect(() => {
     if (subcategoryId) {
       setProducts(getProductsBySubcategory(subcategoryId));
     } else if (categoryId) {
       setProducts(getProductsByCategory(categoryId));
+    } else {
+      setProducts(allProducts);
     }
   }, [categoryId, subcategoryId]);
   
@@ -71,10 +63,6 @@ const CategoryPage = () => {
     if (selectedBrands.length > 0) {
       filtered = filtered.filter(product => selectedBrands.includes(product.brand));
     }
-    
-    filtered = filtered.filter(
-      product => product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
     
     if (sortOption) {
       switch (sortOption) {
@@ -94,7 +82,7 @@ const CategoryPage = () => {
     }
     
     setFilteredProducts(filtered);
-  }, [products, selectedBrands, priceRange, sortOption]);
+  }, [products, selectedBrands, sortOption]);
   
   const handleBrandChange = (brand: string) => {
     setSelectedBrands(prev => 
@@ -106,31 +94,40 @@ const CategoryPage = () => {
   
   const clearFilters = () => {
     setSelectedBrands([]);
-    setPriceRange([minPrice, maxPrice]);
     setSortOption('');
   };
   
-  // If category doesn't exist
-  if (!category && categoryId) {
-    return (
-      <div className="container mx-auto py-16 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">Category Not Found</h1>
-        <p className="mb-6">The category you are looking for does not exist.</p>
-        <Button asChild>
-          <Link to="/">Back to Home</Link>
-        </Button>
-      </div>
-    );
-  }
-  
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Category Navigation */}
+      <div className="flex flex-wrap gap-3 mb-8">
+        <Button 
+          variant={!categoryId ? "default" : "outline"}
+          asChild
+          className="rounded-full"
+        >
+          <Link to="/category">All Products</Link>
+        </Button>
+        {categories.map((cat) => (
+          <Button 
+            key={cat.id}
+            variant={categoryId === cat.id ? "default" : "outline"}
+            asChild
+            className="rounded-full"
+          >
+            <Link to={`/category/${cat.id}`}>{cat.name}</Link>
+          </Button>
+        ))}
+      </div>
+      
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-muted-foreground mb-8">
         <Link to="/" className="hover:text-primary">Home</Link>
         <ChevronRight className="h-4 w-4 mx-2" />
+        <Link to="/category" className="hover:text-primary">All Products</Link>
         {categoryId && (
           <>
+            <ChevronRight className="h-4 w-4 mx-2" />
             <Link to={`/category/${categoryId}`} className="hover:text-primary capitalize">
               {category?.name}
             </Link>
@@ -147,10 +144,10 @@ const CategoryPage = () => {
       {/* Category header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 capitalize">
-          {subcategoryId ? subcategory?.name : category?.name}
+          {subcategoryId ? subcategory?.name : categoryId ? category?.name : "All Products"}
         </h1>
         <p className="text-muted-foreground">
-          {category?.description}
+          {category?.description || "Browse our complete collection of quality products"}
         </p>
       </div>
       
@@ -160,43 +157,32 @@ const CategoryPage = () => {
         <div className="lg:w-1/4 hidden lg:block space-y-6">
           <div>
             <h3 className="font-medium mb-4">Categories</h3>
-            {category && (
-              <div className="space-y-2">
-                <div className="font-medium">
-                  <Link to={`/category/${category.id}`} className="hover:text-primary">
-                    All {category.name}
-                  </Link>
-                </div>
-                {category.subcategories.map(sub => (
-                  <div key={sub.id} className={`pl-4 ${subcategoryId === sub.id ? 'text-primary font-medium' : ''}`}>
-                    <Link to={`/category/${category.id}/${sub.id}`} className="hover:text-primary">
-                      {sub.name}
+            <div className="space-y-2">
+              <div className={`font-medium ${!categoryId ? 'text-primary' : ''}`}>
+                <Link to="/category" className="hover:text-primary">
+                  All Products
+                </Link>
+              </div>
+              {categories.map(cat => (
+                <div key={cat.id}>
+                  <div className={`font-medium ${categoryId === cat.id && !subcategoryId ? 'text-primary' : ''}`}>
+                    <Link to={`/category/${cat.id}`} className="hover:text-primary">
+                      {cat.name}
                     </Link>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium mb-4">Price Range</h3>
-            <Slider
-              value={priceRange}
-              min={minPrice}
-              max={maxPrice}
-              step={10}
-              onValueChange={setPriceRange}
-              className="mb-6"
-            />
-            <div className="flex items-center justify-between">
-              <div className="border rounded-md p-2 w-20">
-                ${priceRange[0]}
-              </div>
-              <div className="border rounded-md p-2 w-20 text-right">
-                ${priceRange[1]}
-              </div>
+                  {categoryId === cat.id && (
+                    <div className="pl-4 mt-2 space-y-1">
+                      {cat.subcategories.map(sub => (
+                        <div key={sub.id} className={`${subcategoryId === sub.id ? 'text-primary font-medium' : ''}`}>
+                          <Link to={`/category/${cat.id}/${sub.id}`} className="hover:text-primary">
+                            {sub.name}
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
           
@@ -256,51 +242,44 @@ const CategoryPage = () => {
                   <div className="space-y-6 py-6">
                     <div>
                       <h3 className="font-medium mb-4">Categories</h3>
-                      {category && (
-                        <div className="space-y-2">
-                          <div className="font-medium">
-                            <Link 
-                              to={`/category/${category.id}`} 
-                              className="hover:text-primary"
-                              onClick={() => setIsMobileFilterOpen(false)}
-                            >
-                              All {category.name}
-                            </Link>
-                          </div>
-                          {category.subcategories.map(sub => (
-                            <div key={sub.id} className={`pl-4 ${subcategoryId === sub.id ? 'text-primary font-medium' : ''}`}>
+                      <div className="space-y-2">
+                        <div className={`font-medium ${!categoryId ? 'text-primary' : ''}`}>
+                          <Link 
+                            to="/category" 
+                            className="hover:text-primary"
+                            onClick={() => setIsMobileFilterOpen(false)}
+                          >
+                            All Products
+                          </Link>
+                        </div>
+                        {categories.map(cat => (
+                          <div key={cat.id}>
+                            <div className={`font-medium ${categoryId === cat.id && !subcategoryId ? 'text-primary' : ''}`}>
                               <Link 
-                                to={`/category/${category.id}/${sub.id}`} 
+                                to={`/category/${cat.id}`} 
                                 className="hover:text-primary"
                                 onClick={() => setIsMobileFilterOpen(false)}
                               >
-                                {sub.name}
+                                {cat.name}
                               </Link>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <h3 className="font-medium mb-4">Price Range</h3>
-                      <Slider
-                        value={priceRange}
-                        min={minPrice}
-                        max={maxPrice}
-                        step={10}
-                        onValueChange={setPriceRange}
-                        className="mb-6"
-                      />
-                      <div className="flex items-center justify-between">
-                        <div className="border rounded-md p-2 w-20">
-                          ${priceRange[0]}
-                        </div>
-                        <div className="border rounded-md p-2 w-20 text-right">
-                          ${priceRange[1]}
-                        </div>
+                            {categoryId === cat.id && (
+                              <div className="pl-4 mt-2 space-y-1">
+                                {cat.subcategories.map(sub => (
+                                  <div key={sub.id} className={`${subcategoryId === sub.id ? 'text-primary font-medium' : ''}`}>
+                                    <Link 
+                                      to={`/category/${cat.id}/${sub.id}`} 
+                                      className="hover:text-primary"
+                                      onClick={() => setIsMobileFilterOpen(false)}
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
                     

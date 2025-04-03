@@ -4,10 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, X, Send, Sparkles, Search, ShoppingCart, Tag, Clock } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Search, ShoppingCart, Tag, Clock, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { searchProducts } from '@/data/products';
+import { searchProducts, filterProducts, products } from '@/data/products';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   id: string;
@@ -23,13 +24,14 @@ const AIAssistantChat = () => {
     {
       id: '1',
       type: 'bot',
-      text: 'Hello! I\'m your AI shopping assistant. How can I help you today?',
+      text: 'Hi there! How can I help you today?',
       timestamp: new Date()
     }
   ]);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -40,7 +42,18 @@ const AIAssistantChat = () => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [isOpen, messages]);
+
+    // Add personalized greeting if user is logged in and it's their first time opening the chat
+    if (isOpen && user && messages.length === 1) {
+      const greeting = {
+        id: Date.now().toString(),
+        type: 'bot' as const,
+        text: `Hello ${user.name || 'there'}! How can I assist you with your shopping today?`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, greeting]);
+    }
+  }, [isOpen, messages, user]);
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -69,8 +82,68 @@ const AIAssistantChat = () => {
       let response = '';
       let action: (() => void) | null = null;
       
-      // Check for specific query patterns
-      if (lowerQuery.includes('deal') || lowerQuery.includes('discount') || lowerQuery.includes('offer')) {
+      // Budget recommendation
+      if (lowerQuery.includes('budget') || lowerQuery.includes('under') || (lowerQuery.includes('best') && lowerQuery.includes('price'))) {
+        const priceMatch = lowerQuery.match(/(\d+)/);
+        const budget = priceMatch ? parseInt(priceMatch[0]) : 0;
+        
+        if (budget > 0) {
+          // Find products under budget
+          const affordableProducts = products.filter(p => p.price <= budget);
+          
+          if (affordableProducts.length > 0) {
+            // Sort by rating
+            const recommended = [...affordableProducts].sort((a, b) => b.rating - a.rating).slice(0, 3);
+            
+            response = `I found ${affordableProducts.length} products under $${budget}. Here are the top recommendations:\n\n`;
+            
+            recommended.forEach((product, index) => {
+              response += `${index + 1}. ${product.name} - ₹${Math.round(product.price * 83)} (Rating: ${product.rating}/5)\n`;
+            });
+            
+            response += `\nWould you like to see more options under $${budget}?`;
+            
+            action = () => navigate(`/search?maxPrice=${budget}`);
+          } else {
+            response = `I couldn't find any products under $${budget}. Would you like to explore options in a slightly higher price range?`;
+          }
+        } else {
+          response = "What's your budget? I can help you find the best products within your price range.";
+        }
+      }
+      // Outfit matching recommendation
+      else if ((lowerQuery.includes('black shirt') || lowerQuery.includes('blue shirt') || lowerQuery.includes('white shirt')) && 
+               (lowerQuery.includes('match') || lowerQuery.includes('recommend') || lowerQuery.includes('suggest'))) {
+        
+        let color = '';
+        if (lowerQuery.includes('black shirt')) color = 'black';
+        else if (lowerQuery.includes('blue shirt')) color = 'blue';
+        else if (lowerQuery.includes('white shirt')) color = 'white';
+        
+        if (color) {
+          response = `For a ${color} shirt, I recommend these matching items:\n\n`;
+          
+          if (color === 'black') {
+            response += "• Pants: Gray or khaki chinos for a casual look, or dark blue jeans\n";
+            response += "• Shoes: Brown or black leather shoes for formal, white sneakers for casual\n";
+            response += "• Accessories: Silver watch, brown leather belt\n\n";
+          } else if (color === 'blue') {
+            response += "• Pants: Navy, khaki or gray pants work well\n";
+            response += "• Shoes: Brown loafers or white sneakers\n";
+            response += "• Accessories: Brown leather belt, silver or gold watch\n\n";
+          } else if (color === 'white') {
+            response += "• Pants: Almost any color works - navy, black, gray, or khaki\n";
+            response += "• Shoes: Brown or black formal shoes, or any color sneakers\n";
+            response += "• Accessories: Any color belt that matches your shoes\n\n";
+          }
+          
+          response += "Would you like me to show you some specific product recommendations?";
+          
+          action = () => navigate(`/category/clothing/pants`);
+        }
+      }
+      // Check for category-specific queries
+      else if (lowerQuery.includes('deal') || lowerQuery.includes('discount') || lowerQuery.includes('offer')) {
         response = "I've found some great deals for you! Would you like to see today's special offers?";
         action = () => navigate('/deals');
       } 
@@ -93,6 +166,10 @@ const AIAssistantChat = () => {
       else if (lowerQuery.includes('tool') || lowerQuery.includes('hardware') || lowerQuery.includes('drill')) {
         response = "Looking for tools? I can help you find the right tools for your project.";
         action = () => navigate('/category/tools');
+      }
+      else if (lowerQuery.includes('accessory') || lowerQuery.includes('accessories') || lowerQuery.includes('watch') || lowerQuery.includes('bag') || lowerQuery.includes('belt')) {
+        response = "Our accessories collection includes watches, bags, belts, and more. Let me show you.";
+        action = () => navigate('/category/accessories');
       }
       else if (lowerQuery.includes('search') || lowerQuery.includes('find') || lowerQuery.includes('looking for')) {
         // Extract what they're searching for
@@ -183,6 +260,14 @@ const AIAssistantChat = () => {
               </Button>
             </div>
             
+            {/* User info if logged in */}
+            {user && (
+              <div className="flex items-center px-4 py-2 bg-muted/30">
+                <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Assisting: {user.name}</span>
+              </div>
+            )}
+            
             {/* Quick Actions */}
             <div className="flex items-center gap-2 p-3 bg-muted/50 overflow-x-auto">
               <Button 
@@ -212,6 +297,15 @@ const AIAssistantChat = () => {
                 <Search className="h-3 w-3" />
                 Electronics
               </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-1 whitespace-nowrap"
+                onClick={() => processUserQuery("Show accessories")}
+              >
+                <Search className="h-3 w-3" />
+                Accessories
+              </Button>
             </div>
             
             {/* Messages */}
@@ -229,7 +323,12 @@ const AIAssistantChat = () => {
                         : "bg-muted self-start"
                     )}
                   >
-                    {message.text}
+                    {message.text.split('\n').map((line, i) => (
+                      <div key={i}>
+                        {line}
+                        {i < message.text.split('\n').length - 1 && <br />}
+                      </div>
+                    ))}
                   </motion.div>
                 ))}
               </div>

@@ -1,4 +1,3 @@
-
 export type Product = {
   id: string;
   name: string;
@@ -302,7 +301,7 @@ export const products: Product[] = [
     subcategory: "pants",
     images: [
       "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?q=80&w=1200",
-      "https://images.unsplash.com/photo-1580906853203-f82f5cab5b8b?q=80&w=1200"
+      "https://images.unsplash.com/photo-1580909677977-9c10ca588bbd?q=80&w=1200"
     ],
     rating: 4.8,
     reviewCount: 187,
@@ -445,6 +444,116 @@ export const products: Product[] = [
     featured: false,
     brand: "ToolPro",
     tags: ["tools", "screwdrivers", "hand tools", "DIY"]
+  },
+  
+  // Accessories Category - NEW
+  {
+    id: "accessories-watch-1",
+    name: "Premium Stainless Steel Watch",
+    description: "Elegant stainless steel watch with automatic movement and sapphire crystal. Water-resistant up to 100 meters with a classic design that complements any outfit.",
+    price: 199.99,
+    category: "accessories",
+    subcategory: "watches",
+    images: [
+      "https://images.unsplash.com/photo-1539874754764-5a96559165b0?q=80&w=1200",
+      "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 156,
+    stock: 48,
+    featured: true,
+    brand: "Chrono",
+    tags: ["accessories", "watch", "luxury", "men"]
+  },
+  {
+    id: "accessories-watch-2",
+    name: "Smart Fitness Watch",
+    description: "Advanced smart watch with fitness tracking, heart rate monitoring, sleep analysis, and notifications. Includes multiple sport modes and 5-day battery life.",
+    price: 129.99,
+    category: "accessories",
+    subcategory: "watches",
+    images: [
+      "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=1200",
+      "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=1200"
+    ],
+    rating: 4.6,
+    reviewCount: 210,
+    stock: 65,
+    featured: false,
+    brand: "TechFit",
+    tags: ["accessories", "watch", "smart", "fitness"]
+  },
+  {
+    id: "accessories-bag-1",
+    name: "Leather Messenger Bag",
+    description: "Genuine leather messenger bag with multiple compartments and adjustable strap. Perfect for professionals who need a stylish and functional bag for everyday use.",
+    price: 149.99,
+    category: "accessories",
+    subcategory: "bags",
+    images: [
+      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1200",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=1200"
+    ],
+    rating: 4.7,
+    reviewCount: 98,
+    stock: 32,
+    featured: true,
+    brand: "LeatherCraft",
+    tags: ["accessories", "bag", "leather", "messenger"]
+  },
+  {
+    id: "accessories-belt-1",
+    name: "Premium Leather Belt",
+    description: "High-quality leather belt with classic buckle design. Handcrafted from genuine full-grain leather for durability and timeless style.",
+    price: 49.99,
+    category: "accessories",
+    subcategory: "belts",
+    images: [
+      "https://images.unsplash.com/photo-1625666233883-ad159491d8b4?q=80&w=1200",
+      "https://images.unsplash.com/photo-1611831493882-80dc6dd9be6f?q=80&w=1200"
+    ],
+    rating: 4.9,
+    reviewCount: 76,
+    stock: 88,
+    featured: false,
+    brand: "BeltWorks",
+    tags: ["accessories", "belt", "leather", "men"]
+  },
+  {
+    id: "accessories-sunglasses-1",
+    name: "Polarized Aviator Sunglasses",
+    description: "Classic aviator sunglasses with polarized lenses that reduce glare and enhance visual clarity. Includes durable metal frame and 100% UV protection.",
+    price: 89.99,
+    category: "accessories",
+    subcategory: "eyewear",
+    images: [
+      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=1200",
+      "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=1200"
+    ],
+    rating: 4.5,
+    reviewCount: 124,
+    stock: 56,
+    featured: true,
+    brand: "SunStyle",
+    tags: ["accessories", "sunglasses", "eyewear", "fashion"]
+  },
+  {
+    id: "accessories-necklace-1",
+    name: "Sterling Silver Pendant Necklace",
+    description: "Elegant sterling silver pendant necklace with delicate chain. Features a timeless design that complements any outfit for both casual and formal occasions.",
+    price: 79.99,
+    category: "accessories",
+    subcategory: "jewelry",
+    images: [
+      "https://images.unsplash.com/photo-1611085583191-a3b181a88401?q=80&w=1200",
+      "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 89,
+    stock: 42,
+    featured: false,
+    brand: "SilverCraft",
+    tags: ["accessories", "jewelry", "necklace", "silver"]
   }
 ];
 
@@ -518,6 +627,19 @@ export const categories: Category[] = [
       { id: "handtools", name: "Hand Tools" },
       { id: "storage", name: "Tool Storage" },
       { id: "safety", name: "Safety Equipment" }
+    ]
+  },
+  {
+    id: "accessories",
+    name: "Accessories",
+    description: "Complete your look with our stylish accessories collection.",
+    image: "https://images.unsplash.com/photo-1539874754764-5a96559165b0?q=80&w=1200",
+    subcategories: [
+      { id: "watches", name: "Watches" },
+      { id: "bags", name: "Bags & Wallets" },
+      { id: "belts", name: "Belts" },
+      { id: "eyewear", name: "Eyewear" },
+      { id: "jewelry", name: "Jewelry" }
     ]
   }
 ];
