@@ -1,4 +1,3 @@
-
 export type Product = {
   id: string;
   name: string;
@@ -228,6 +227,212 @@ export const products: Product[] = [
     featured: false,
     brand: "SleepWell",
     tags: ["sofa", "sleeper", "convertible", "guest bed"]
+  },
+  
+  // Clothing Category - NEW
+  {
+    id: "clothing-shirt-1",
+    name: "Premium Cotton Dress Shirt",
+    description: "Classic dress shirt made from 100% Egyptian cotton with a tailored fit. Features wrinkle-resistant fabric and mother-of-pearl buttons.",
+    price: 79.99,
+    category: "clothing",
+    subcategory: "shirts",
+    images: [
+      "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=1200",
+      "https://images.unsplash.com/photo-1626497764746-6dc36546b388?q=80&w=1200"
+    ],
+    rating: 4.6,
+    reviewCount: 183,
+    stock: 120,
+    featured: true,
+    brand: "ClothMaster",
+    tags: ["shirt", "formal", "dress shirt", "cotton"]
+  },
+  {
+    id: "clothing-shirt-2",
+    name: "Casual Linen Shirt",
+    description: "Breathable linen shirt perfect for warm weather. Features a relaxed fit and natural texture ideal for casual occasions.",
+    price: 59.99,
+    category: "clothing",
+    subcategory: "shirts",
+    images: [
+      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1200",
+      "https://images.unsplash.com/photo-1626497764746-6dc36546b388?q=80&w=1200"
+    ],
+    rating: 4.5,
+    reviewCount: 143,
+    stock: 95,
+    featured: false,
+    brand: "SummerWear",
+    tags: ["shirt", "casual", "linen", "summer"]
+  },
+  {
+    id: "clothing-pants-1",
+    name: "Slim Fit Chino Pants",
+    description: "Classic chino pants with a modern slim fit. Made from stretch cotton for comfort and easy movement throughout the day.",
+    price: 69.99,
+    category: "clothing",
+    subcategory: "pants",
+    images: [
+      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=1200",
+      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1200"
+    ],
+    rating: 4.7,
+    reviewCount: 211,
+    stock: 150,
+    featured: true,
+    brand: "UrbanStyle",
+    tags: ["pants", "chino", "slim fit", "casual"]
+  },
+  {
+    id: "clothing-pants-2",
+    name: "Athletic Performance Joggers",
+    description: "Lightweight joggers designed for maximum comfort during workouts. Features moisture-wicking fabric and zippered pockets.",
+    price: 49.99,
+    category: "clothing",
+    subcategory: "pants",
+    images: [
+      "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?q=80&w=1200",
+      "https://images.unsplash.com/photo-1580906853203-f82f5cab5b8b?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 187,
+    stock: 130,
+    featured: false,
+    brand: "ActiveFit",
+    tags: ["pants", "joggers", "athletic", "workout"]
+  },
+  
+  // Electronics Category - NEW
+  {
+    id: "electronics-laptop-1",
+    name: "UltraBook Pro 16",
+    description: "Powerful laptop with 16-inch Retina display, latest generation processor, 16GB RAM, and 512GB SSD storage. Perfect for creative professionals.",
+    price: 1899.99,
+    category: "electronics",
+    subcategory: "laptops",
+    images: [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1200",
+      "https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=1200"
+    ],
+    rating: 4.9,
+    reviewCount: 342,
+    stock: 75,
+    featured: true,
+    brand: "TechPro",
+    tags: ["laptop", "computer", "ultrabook", "professional"]
+  },
+  {
+    id: "electronics-laptop-2",
+    name: "Gaming Laptop Elite",
+    description: "High-performance gaming laptop with RGB keyboard, dedicated graphics card, 144Hz display, and advanced cooling system for marathon gaming sessions.",
+    price: 1699.99,
+    category: "electronics",
+    subcategory: "laptops",
+    images: [
+      "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=1200",
+      "https://images.unsplash.com/photo-1542393545-10f5cde2c810?q=80&w=1200"
+    ],
+    rating: 4.7,
+    reviewCount: 263,
+    stock: 55,
+    featured: true,
+    brand: "GameMaster",
+    tags: ["laptop", "gaming", "high performance", "rgb"]
+  },
+  {
+    id: "electronics-smartphone-1",
+    name: "FlagShip X Pro Smartphone",
+    description: "Latest flagship smartphone with 6.7-inch OLED display, 108MP camera system, all-day battery life, and the most powerful mobile processor available.",
+    price: 1099.99,
+    category: "electronics",
+    subcategory: "smartphones",
+    images: [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=1200",
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 521,
+    stock: 120,
+    featured: true,
+    brand: "MobileTech",
+    tags: ["smartphone", "mobile", "camera", "flagship"]
+  },
+  
+  // Toys Category - NEW
+  {
+    id: "toys-building-1",
+    name: "Ultimate Building Blocks Set",
+    description: "Creative building blocks set with 1000+ pieces to build anything imaginable. Great for developing motor skills and creativity in children ages 4 and up.",
+    price: 59.99,
+    category: "toys",
+    subcategory: "building",
+    images: [
+      "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?q=80&w=1200",
+      "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?q=80&w=1200"
+    ],
+    rating: 4.9,
+    reviewCount: 432,
+    stock: 200,
+    featured: true,
+    brand: "BlockMaster",
+    tags: ["toys", "building blocks", "creative", "kids"]
+  },
+  {
+    id: "toys-puzzle-1",
+    name: "3D Wooden Puzzle Set",
+    description: "Challenging wooden puzzles that help develop problem-solving skills and patience. Set includes 5 different puzzles of increasing difficulty.",
+    price: 34.99,
+    category: "toys",
+    subcategory: "puzzles",
+    images: [
+      "https://images.unsplash.com/photo-1559825481-12a05cc00344?q=80&w=1200",
+      "https://images.unsplash.com/photo-1590367470863-e196a15a8858?q=80&w=1200"
+    ],
+    rating: 4.6,
+    reviewCount: 187,
+    stock: 120,
+    featured: false,
+    brand: "BrainGames",
+    tags: ["toys", "puzzles", "wooden", "educational"]
+  },
+  
+  // Tools Category - NEW
+  {
+    id: "tools-powertools-1",
+    name: "Professional Drill Kit",
+    description: "Complete drill kit with multiple drill bits, variable speed control, and long-lasting battery. Perfect for both DIY enthusiasts and professionals.",
+    price: 149.99,
+    category: "tools",
+    subcategory: "powertools",
+    images: [
+      "https://images.unsplash.com/photo-1581147036324-c71f53d16dc7?q=80&w=1200",
+      "https://images.unsplash.com/photo-1526714719019-b3032b5b5aac?q=80&w=1200"
+    ],
+    rating: 4.8,
+    reviewCount: 324,
+    stock: 85,
+    featured: true,
+    brand: "ToolMaster",
+    tags: ["tools", "drill", "power tools", "DIY"]
+  },
+  {
+    id: "tools-handtools-1",
+    name: "Premium Screwdriver Set",
+    description: "Complete set of precision screwdrivers with ergonomic handles. Includes Phillips, flathead, and specialty bits for all household needs.",
+    price: 39.99,
+    category: "tools",
+    subcategory: "handtools",
+    images: [
+      "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?q=80&w=1200",
+      "https://images.unsplash.com/photo-1580902215262-9b941bc6eab3?q=80&w=1200"
+    ],
+    rating: 4.7,
+    reviewCount: 213,
+    stock: 150,
+    featured: false,
+    brand: "ToolPro",
+    tags: ["tools", "screwdrivers", "hand tools", "DIY"]
   }
 ];
 
@@ -240,7 +445,7 @@ export const categories: Category[] = [
     subcategories: [
       { id: "pens", name: "Pens & Writing Tools" },
       { id: "notebooks", name: "Notebooks & Journals" },
-      { id: "office supplies", name: "Office Supplies" }
+      { id: "office-supplies", name: "Office Supplies" }
     ]
   },
   {
@@ -253,6 +458,54 @@ export const categories: Category[] = [
       { id: "acs", name: "Air Conditioners" },
       { id: "refrigerators", name: "Refrigerators" },
       { id: "sofas", name: "Sofas & Seating" }
+    ]
+  },
+  {
+    id: "clothing",
+    name: "Clothing & Apparel",
+    description: "Stylish clothing for all occasions from top-rated brands.",
+    image: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=1200",
+    subcategories: [
+      { id: "shirts", name: "Shirts & Tops" },
+      { id: "pants", name: "Pants & Bottoms" },
+      { id: "outerwear", name: "Jackets & Outerwear" },
+      { id: "sportswear", name: "Sportswear" }
+    ]
+  },
+  {
+    id: "electronics",
+    name: "Electronics & Gadgets",
+    description: "Latest technology products for work and entertainment.",
+    image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1200",
+    subcategories: [
+      { id: "laptops", name: "Laptops & Computers" },
+      { id: "smartphones", name: "Smartphones & Accessories" },
+      { id: "audio", name: "Audio Equipment" },
+      { id: "cameras", name: "Cameras & Photo" }
+    ]
+  },
+  {
+    id: "toys",
+    name: "Toys & Games",
+    description: "Fun and educational toys for children of all ages.",
+    image: "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?q=80&w=1200",
+    subcategories: [
+      { id: "building", name: "Building Sets" },
+      { id: "puzzles", name: "Puzzles & Games" },
+      { id: "educational", name: "Educational Toys" },
+      { id: "outdoor", name: "Outdoor Play" }
+    ]
+  },
+  {
+    id: "tools",
+    name: "Tools & Hardware",
+    description: "Quality tools for DIY projects and professional work.",
+    image: "https://images.unsplash.com/photo-1581147036324-c71f53d16dc7?q=80&w=1200",
+    subcategories: [
+      { id: "powertools", name: "Power Tools" },
+      { id: "handtools", name: "Hand Tools" },
+      { id: "storage", name: "Tool Storage" },
+      { id: "safety", name: "Safety Equipment" }
     ]
   }
 ];

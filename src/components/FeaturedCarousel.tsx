@@ -9,26 +9,26 @@ import { useAuth } from '@/contexts/AuthContext';
 const carouselItems = [
   {
     id: 1,
-    title: "AI-Powered Product Recommendations",
-    description: "Discover products tailored just for you with our advanced AI algorithms",
+    title: "Stationery & Office Supplies",
+    description: "Discover premium pens, notebooks, and office essentials for work and study",
     bgColor: "from-blue-600 to-violet-600",
     textColor: "text-white",
-    image: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFydGlmaWNpYWwlMjBpbnRlbGxpZ2VuY2V8ZW58MHx8MHx8fDA%3D",
-    path: "/deals"
+    image: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFydGlmaWNpYWwlMjBpbnRlbGxpZ2VuY2V8ZW58MHx8MHx8fDA%3D",
+    path: "/category/stationery"
   },
   {
     id: 2,
-    title: "Smart Search Technology",
-    description: "Find exactly what you're looking for across multiple categories instantly",
+    title: "Furniture & Home Appliances",
+    description: "Browse stylish furniture and high-quality appliances for your modern home",
     bgColor: "from-emerald-600 to-teal-600",
     textColor: "text-white",
-    image: "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNlYXJjaHxlbnwwfHwwfHx8MA%3D%3D",
-    path: "/search"
+    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNlYXJjaHxlbnwwfHwwfHx8MA%3D%3D",
+    path: "/category/furniture"
   },
   {
     id: 3,
-    title: "Trending Products",
-    description: "See what's popular right now based on real-time data analysis",
+    title: "Today's Limited Deals",
+    description: "Get amazing discounts on top products with our special time-limited offers",
     bgColor: "from-amber-500 to-orange-600",
     textColor: "text-white",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dHJlbmRpbmd8ZW58MHx8MHx8fDA%3D",
@@ -85,11 +85,8 @@ const FeaturedCarousel = () => {
   };
 
   const handleGetStarted = (path: string) => {
-    if (isAuthenticated) {
-      navigate(path);
-    } else {
-      navigate('/login');
-    }
+    // We're now skipping the login check since user is already authenticated
+    navigate(path);
   };
 
   return (

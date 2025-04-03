@@ -7,55 +7,20 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Timer, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
-
-// Sample deal data with discounts
-const sampleDeals = [
-  {
-    id: 'deal1',
-    name: 'iPhone 14 Pro Max (512GB)',
-    originalPrice: 1299,
-    discountedPrice: 1099,
-    image: 'https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGlwaG9uZXxlbnwwfHwwfHx8MA%3D%3D',
-    discount: 15,
-    category: 'Smartphones',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-  },
-  {
-    id: 'deal2',
-    name: 'Samsung Galaxy Book Pro',
-    originalPrice: 1199,
-    discountedPrice: 899,
-    image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D',
-    discount: 25,
-    category: 'Laptops',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  },
-  {
-    id: 'deal3',
-    name: 'Sony WH-1000XM5 Headphones',
-    originalPrice: 399,
-    discountedPrice: 299,
-    image: 'https://images.unsplash.com/photo-1600086827875-a63b01f1335c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8aGVhZHBob25lc3xlbnwwfHwwfHx8MA%3D%3D',
-    discount: 25,
-    category: 'Audio',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  },
-  {
-    id: 'deal4',
-    name: 'MacBook Air M2',
-    originalPrice: 1299,
-    discountedPrice: 1099,
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFjYm9va3xlbnwwfHwwfHx8MA%3D%3D',
-    discount: 15,
-    category: 'Laptops',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  }
-];
+import dealsData, { DealItem } from '@/data/dealsData';
 
 const TodayDeals = () => {
   const [timeLeft, setTimeLeft] = useState('');
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const [displayedDeals, setDisplayedDeals] = useState<DealItem[]>([]);
+  
+  // On component mount, randomly select 4 deals to display
+  useEffect(() => {
+    // Shuffle array and take first 4
+    const shuffled = [...dealsData].sort(() => 0.5 - Math.random());
+    setDisplayedDeals(shuffled.slice(0, 4));
+  }, []);
   
   // Calculate time remaining until midnight
   useEffect(() => {
@@ -79,7 +44,7 @@ const TodayDeals = () => {
     return () => clearInterval(timer);
   }, []);
   
-  const handleAddToCart = (deal: any) => {
+  const handleAddToCart = (deal: DealItem) => {
     addItem({
       id: deal.id,
       name: deal.name,
@@ -123,7 +88,7 @@ const TodayDeals = () => {
         initial="hidden"
         animate="show"
       >
-        {sampleDeals.map((deal) => (
+        {displayedDeals.map((deal) => (
           <motion.div key={deal.id} variants={item}>
             <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-purple-200 dark:border-purple-800/40 group">
               <div className="relative pt-[75%] overflow-hidden">
@@ -138,7 +103,9 @@ const TodayDeals = () => {
               </div>
               
               <CardContent className="p-4">
+                <div className="text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">{deal.brand}</div>
                 <h3 className="font-medium line-clamp-2 h-12 mb-1">{deal.name}</h3>
+                <p className="text-muted-foreground text-sm line-clamp-2 mb-2">{deal.description}</p>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
                     ${deal.discountedPrice}

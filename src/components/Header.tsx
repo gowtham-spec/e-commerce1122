@@ -18,6 +18,7 @@ import { Search, ShoppingCart, Heart, Menu, X, User } from 'lucide-react';
 import MobileMenu from './MobileMenu';
 import { categories } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Header = () => {
   const { itemCount, setIsCartOpen } = useCart();
@@ -26,6 +27,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +37,14 @@ const Header = () => {
   };
   
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header className={`${theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} border-b sticky top-0 z-50`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-primary">TradeMarket</span>
+            <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-purple-400' : 'text-primary'}`}>
+              ValueMarket
+            </span>
           </Link>
 
           {/* Search bar - hidden on mobile */}
@@ -49,7 +53,7 @@ const Header = () => {
               <Input
                 type="text"
                 placeholder="Search for products..."
-                className="w-full pr-10"
+                className={`w-full pr-10 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : ''}`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -69,7 +73,7 @@ const Header = () => {
             {/* Wishlist */}
             <Link to="/wishlist" className="relative">
               <Button variant="ghost" size="icon">
-                <Heart className="h-6 w-6" />
+                <Heart className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
                 {wishlistItems.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-secondary text-black text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
                     {wishlistItems.length}
@@ -85,7 +89,7 @@ const Header = () => {
               onClick={() => setIsCartOpen(true)}
               className="relative"
             >
-              <ShoppingCart className="h-6 w-6" />
+              <ShoppingCart className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
               {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
                   {itemCount}
@@ -125,7 +129,7 @@ const Header = () => {
             ) : (
               <Link to="/login">
                 <Button variant="ghost" size="icon">
-                  <User className="h-6 w-6" />
+                  <User className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
                 </Button>
               </Link>
             )}
@@ -138,31 +142,43 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
+                <X className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
               )}
             </Button>
           </div>
         </div>
 
         {/* Category navigation - desktop */}
-        <nav className="hidden md:flex mt-4 space-x-6">
+        <nav className="hidden md:flex mt-4 space-x-6 overflow-x-auto pb-2">
           {categories.map((category) => (
             <div key={category.id} className="relative group">
               <Link 
                 to={`/category/${category.id}`}
-                className="font-medium text-gray-700 hover:text-primary transition-colors"
+                className={`font-medium whitespace-nowrap transition-colors ${
+                  theme === 'dark' 
+                    ? 'text-gray-300 hover:text-purple-400' 
+                    : 'text-gray-700 hover:text-primary'
+                }`}
               >
                 {category.name}
               </Link>
               <div className="absolute hidden group-hover:block pt-2 z-10">
-                <div className="bg-white shadow-md rounded-md overflow-hidden py-2">
+                <div className={`${
+                  theme === 'dark' 
+                    ? 'bg-gray-800 shadow-md shadow-black/20' 
+                    : 'bg-white shadow-md'
+                  } rounded-md overflow-hidden py-2`}>
                   {category.subcategories.map((subcategory) => (
                     <Link 
                       key={subcategory.id} 
                       to={`/category/${category.id}/${subcategory.id}`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                      className={`block px-4 py-2 text-sm whitespace-nowrap ${
+                        theme === 'dark'
+                          ? 'text-gray-300 hover:bg-gray-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
                     >
                       {subcategory.name}
                     </Link>
@@ -173,7 +189,11 @@ const Header = () => {
           ))}
           <Link 
             to="/deals"
-            className="font-medium text-secondary hover:text-secondary/80 transition-colors"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-purple-400 hover:text-purple-300' 
+                : 'text-secondary hover:text-secondary/80'
+            }`}
           >
             Today's Deals
           </Link>
@@ -185,7 +205,7 @@ const Header = () => {
             <Input
               type="text"
               placeholder="Search for products..."
-              className="w-full pr-10"
+              className={`w-full pr-10 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : ''}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

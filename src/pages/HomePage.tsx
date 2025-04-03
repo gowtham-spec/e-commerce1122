@@ -7,19 +7,27 @@ import ProductCard from '@/components/ProductCard';
 import FeaturedCarousel from '@/components/FeaturedCarousel';
 import ScrollingTags from '@/components/ScrollingTags';
 import TodayDeals from '@/components/TodayDeals';
+import CategoryShowcase from '@/components/CategoryShowcase';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { categories, getFeaturedProducts } from '@/data/products';
 
 const fetchProducts = async () => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*, product_images(*)')
-    .order('created_at', { ascending: false })
-    .limit(8);
-  
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, product_images(*)')
+      .order('created_at', { ascending: false })
+      .limit(8);
+    
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    // Fallback to local data if Supabase fetch fails
+    return getFeaturedProducts();
+  }
 };
 
 const HomePage = () => {
@@ -81,8 +89,16 @@ const HomePage = () => {
         <ScrollingTags />
       </div>
       
-      {/* Add Today's Deals section */}
+      {/* Today's Deals section */}
       <TodayDeals />
+      
+      {/* Popular Categories Showcase */}
+      {categories.map((category) => (
+        <CategoryShowcase 
+          key={category.id}
+          category={category}
+        />
+      ))}
       
       <section className="my-12">
         <div className="flex justify-between items-center mb-6">
@@ -112,10 +128,10 @@ const HomePage = () => {
                 <ProductCard 
                   product={{
                     ...product,
-                    images: product.product_images.map((img: any) => img.url),
-                    reviewCount: 42,
+                    images: product.product_images ? product.product_images.map((img: any) => img.url) : [product.image || ''],
+                    reviewCount: product.reviewCount || 42,
                     featured: true,
-                    brand: product.name.split(' ')[0], // Using first word as brand for demo
+                    brand: product.brand || product.name.split(' ')[0], // Using first word as brand for demo
                     tags: [product.category, product.subcategory]
                   }}
                 />
