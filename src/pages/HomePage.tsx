@@ -118,7 +118,9 @@ const HomePage = () => {
       <section className="my-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured Products</h2>
-          <Button variant="link" as={Link} to="/search">View All</Button>
+          <Button variant="link" asChild>
+            <Link to="/search">View All</Link>
+          </Button>
         </div>
 
         {isLoading ? (

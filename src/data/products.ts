@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -12,6 +13,8 @@ export type Product = {
   featured: boolean;
   brand: string;
   tags: string[];
+  sizes?: string[];
+  colors?: string[];
 };
 
 export type Category = {
@@ -246,7 +249,9 @@ export const products: Product[] = [
     stock: 120,
     featured: true,
     brand: "ClothMaster",
-    tags: ["shirt", "formal", "dress shirt", "cotton"]
+    tags: ["shirt", "formal", "dress shirt", "cotton"],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: ["White", "Blue", "Black"]
   },
   {
     id: "clothing-shirt-2",
@@ -264,7 +269,9 @@ export const products: Product[] = [
     stock: 95,
     featured: false,
     brand: "SummerWear",
-    tags: ["shirt", "casual", "linen", "summer"]
+    tags: ["shirt", "casual", "linen", "summer"],
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Beige", "White", "Light Blue", "Green"]
   },
   {
     id: "clothing-pants-1",
@@ -282,7 +289,9 @@ export const products: Product[] = [
     stock: 150,
     featured: true,
     brand: "UrbanStyle",
-    tags: ["pants", "chino", "slim fit", "casual"]
+    tags: ["pants", "chino", "slim fit", "casual"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["Khaki", "Navy", "Gray", "Olive"]
   },
   {
     id: "clothing-pants-2",
@@ -300,7 +309,9 @@ export const products: Product[] = [
     stock: 130,
     featured: false,
     brand: "ActiveFit",
-    tags: ["pants", "joggers", "athletic", "workout"]
+    tags: ["pants", "joggers", "athletic", "workout"],
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Black", "Gray", "Navy", "Red"]
   },
   
   // Electronics Category - NEW
@@ -356,7 +367,8 @@ export const products: Product[] = [
     stock: 120,
     featured: true,
     brand: "MobileTech",
-    tags: ["smartphone", "mobile", "camera", "flagship"]
+    tags: ["smartphone", "mobile", "camera", "flagship"],
+    colors: ["Midnight Black", "Silver", "Blue", "Red"]
   },
   
   // Toys Category - NEW
