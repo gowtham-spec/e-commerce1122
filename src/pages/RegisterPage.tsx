@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { Facebook, Github, Mail } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -18,15 +19,20 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { register, isAuthenticated } = useAuth();
+  const { register, isAuthenticated, socialLogin } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   // Redirect if already logged in
   useEffect(() => {
     if (isAuthenticated) {
+      toast({
+        title: "Welcome!",
+        description: "You have successfully signed in.",
+      });
       navigate('/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, toast]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +57,11 @@ const RegisterPage = () => {
       setError('');
       setIsLoading(true);
       await register(name, email, password);
-      // No need to navigate here as the auth state listener will trigger the redirect
+      toast({
+        title: "Account Created!",
+        description: `Welcome to ValueMarket, ${name}!`,
+      });
+      // Auth state listener in AuthContext will handle the redirect
     } catch (error: any) {
       setError(error.message || 'Failed to create an account. Please try again.');
     } finally {
@@ -59,8 +69,14 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    setError(`${provider} registration is not implemented yet.`);
+  const handleSocialLogin = async (provider: string) => {
+    try {
+      setError('');
+      await socialLogin(provider);
+      // Auth state listener will handle redirect
+    } catch (error: any) {
+      setError(`${provider} login failed: ${error.message}`);
+    }
   };
 
   return (
@@ -68,7 +84,7 @@ const RegisterPage = () => {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold">Create an Account</h1>
         <p className="text-muted-foreground mt-2">
-          Join TradeMarket and start shopping today
+          Join ValueMarket and start shopping today
         </p>
       </div>
       
@@ -161,15 +177,15 @@ const RegisterPage = () => {
         </div>
         
         <div className="flex gap-3 mt-6">
-          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('Facebook')}>
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('facebook')}>
             <Facebook className="h-4 w-4 mr-2" />
             Facebook
           </Button>
-          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('GitHub')}>
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('github')}>
             <Github className="h-4 w-4 mr-2" />
             GitHub
           </Button>
-          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('Google')}>
+          <Button variant="outline" className="flex-1" onClick={() => handleSocialLogin('google')}>
             <Mail className="h-4 w-4 mr-2" />
             Google
           </Button>

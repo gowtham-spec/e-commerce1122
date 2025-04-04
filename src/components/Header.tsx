@@ -16,7 +16,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { Search, ShoppingCart, Heart, Menu, X, User } from 'lucide-react';
 import MobileMenu from './MobileMenu';
-import { categories } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -172,19 +171,6 @@ const Header = () => {
           >
             Today's Deals
           </Link>
-          {categories.map((category) => (
-            <Link 
-              key={category.id}
-              to={`/category/${category.id}`}
-              className={`font-medium whitespace-nowrap transition-colors ${
-                theme === 'dark' 
-                  ? 'text-gray-300 hover:text-purple-400' 
-                  : 'text-gray-700 hover:text-primary'
-              }`}
-            >
-              {category.name}
-            </Link>
-          ))}
         </nav>
 
         {/* Mobile search bar - only visible on mobile */}

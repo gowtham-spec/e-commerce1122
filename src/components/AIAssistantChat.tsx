@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, X, Send, Sparkles, Search, ShoppingCart, Tag, Clock, User } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Search, ShoppingCart, Tag, Clock, User, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { searchProducts, filterProducts, products } from '@/data/products';
@@ -24,7 +24,7 @@ const AIAssistantChat = () => {
     {
       id: '1',
       type: 'bot',
-      text: 'Hi there! How can I help you with your shopping today?',
+      text: 'Hi there! I\'m your shopping assistant. How can I help you find the perfect product today?',
       timestamp: new Date()
     }
   ]);
@@ -111,64 +111,65 @@ const AIAssistantChat = () => {
           response = "What's your budget? I can help you find the best products within your price range.";
         }
       }
-      // Outfit matching recommendation
-      else if ((lowerQuery.includes('black shirt') || lowerQuery.includes('blue shirt') || lowerQuery.includes('white shirt')) && 
-               (lowerQuery.includes('match') || lowerQuery.includes('recommend') || lowerQuery.includes('suggest'))) {
-        
+      // Shirt recommendation and outfit matching
+      else if (lowerQuery.includes('shirt')) {
         let color = '';
         if (lowerQuery.includes('black shirt')) color = 'black';
         else if (lowerQuery.includes('blue shirt')) color = 'blue';
         else if (lowerQuery.includes('white shirt')) color = 'white';
+        else color = 'any';
         
-        if (color) {
-          response = `For a ${color} shirt, I recommend these matching items:\n\n`;
-          
-          if (color === 'black') {
-            response += "• Pants: Gray or khaki chinos for a casual look, or dark blue jeans\n";
-            response += "• Shoes: Brown or black leather shoes for formal, white sneakers for casual\n";
-            response += "• Accessories: Silver watch, brown leather belt\n\n";
-          } else if (color === 'blue') {
-            response += "• Pants: Navy, khaki or gray pants work well\n";
-            response += "• Shoes: Brown loafers or white sneakers\n";
-            response += "• Accessories: Brown leather belt, silver or gold watch\n\n";
-          } else if (color === 'white') {
-            response += "• Pants: Almost any color works - navy, black, gray, or khaki\n";
-            response += "• Shoes: Brown or black formal shoes, or any color sneakers\n";
-            response += "• Accessories: Any color belt that matches your shoes\n\n";
-          }
-          
-          response += "Would you like me to show you some specific product recommendations?";
-          
-          action = () => navigate(`/category/clothing/pants`);
+        response = `I've found some great shirts for you! ${color !== 'any' ? `For a ${color} shirt, ` : ''}Here are some matching outfit suggestions:\n\n`;
+        
+        if (color === 'black' || color === 'any') {
+          response += "• Black shirts pair well with gray or khaki chinos for a casual look, or dark blue jeans\n";
+          response += "• For footwear, consider brown or black leather shoes for formal occasions, white sneakers for casual\n";
+          response += "• Complete the look with a silver watch and brown leather belt\n\n";
         }
+        
+        if (color === 'blue' || color === 'any') {
+          response += "• Blue shirts look great with navy, khaki or gray pants\n";
+          response += "• Brown loafers or white sneakers would complement this style\n";
+          response += "• Add a brown leather belt and a silver or gold watch to complete the outfit\n\n";
+        }
+        
+        if (color === 'white' || color === 'any') {
+          response += "• White shirts are versatile and work with almost any color pants - navy, black, gray, or khaki\n";
+          response += "• Choose brown or black formal shoes, or any color sneakers for casual wear\n";
+          response += "• Accessorize with a belt that matches your shoes\n\n";
+        }
+        
+        response += "Would you like to see our shirt collection or matching accessories to complete your outfit?";
+        
+        action = () => navigate(`/category/clothing`);
       }
       // Check for category-specific queries
       else if (lowerQuery.includes('deal') || lowerQuery.includes('discount') || lowerQuery.includes('offer')) {
-        response = "I've found some great deals for you! Would you like to see today's special offers?";
+        response = "I've found some amazing deals for you! Our today's special offers include discounts up to 25%. Would you like to see these limited-time deals?";
         action = () => navigate('/deals');
       } 
       else if (lowerQuery.includes('cloth') || lowerQuery.includes('shirt') || lowerQuery.includes('pant') || lowerQuery.includes('wear')) {
-        response = "We have a wide selection of clothing items. Let me take you to our clothing section.";
+        response = "We have a wide selection of clothing items. From casual to formal wear, we've got you covered. Let me show you our clothing collection.";
         action = () => navigate('/category/clothing');
       }
       else if (lowerQuery.includes('electronic') || lowerQuery.includes('laptop') || lowerQuery.includes('phone')) {
-        response = "Looking for electronics? I can show you our latest collection of gadgets and devices.";
+        response = "Looking for electronics? We have the latest gadgets and devices. From smartphones to laptops and accessories, I can help you find exactly what you need.";
         action = () => navigate('/category/electronics');
       }
       else if (lowerQuery.includes('toy') || lowerQuery.includes('game') || lowerQuery.includes('kid')) {
-        response = "Check out our toys and games collection for all ages!";
+        response = "Check out our toys and games collection for all ages! We have educational toys, board games, and fun activities for children of all ages.";
         action = () => navigate('/category/toys');
       }
       else if (lowerQuery.includes('furniture') || lowerQuery.includes('sofa') || lowerQuery.includes('chair') || lowerQuery.includes('table')) {
-        response = "We have stylish furniture for every room. Let me show you our furniture collection.";
+        response = "We have stylish furniture for every room. From comfortable sofas to ergonomic chairs and elegant tables. Let me show you our furniture collection.";
         action = () => navigate('/category/furniture');
       }
       else if (lowerQuery.includes('stationary') || lowerQuery.includes('office supplies') || lowerQuery.includes('pen')) {
-        response = "Looking for stationary or office supplies? I can help you find what you need.";
+        response = "Looking for stationery or office supplies? We have everything from premium pens to notebooks and organizational tools. Let me help you find what you need.";
         action = () => navigate('/category/stationary');
       }
       else if (lowerQuery.includes('accessory') || lowerQuery.includes('accessories') || lowerQuery.includes('watch') || lowerQuery.includes('bag') || lowerQuery.includes('belt')) {
-        response = "Our accessories collection includes watches, bags, belts, and more. Let me show you.";
+        response = "Our accessories collection includes watches, bags, belts, and more. These items can complete your outfit and add a touch of style. Would you like to see our collection?";
         action = () => navigate('/category/accessories');
       }
       else if (lowerQuery.includes('search') || lowerQuery.includes('find') || lowerQuery.includes('looking for')) {
@@ -177,23 +178,40 @@ const AIAssistantChat = () => {
         if (searchTerms) {
           const results = searchProducts(searchTerms);
           if (results.length > 0) {
-            response = `I found ${results.length} products matching "${searchTerms}". Would you like to see the results?`;
+            response = `Great news! I found ${results.length} products matching "${searchTerms}". Would you like to see the results? I can also help you refine your search if needed.`;
             action = () => navigate(`/search?q=${encodeURIComponent(searchTerms)}`);
           } else {
-            response = `I couldn't find any products matching "${searchTerms}". Would you like to browse our categories instead?`;
+            response = `I couldn't find any products matching "${searchTerms}". Would you like to browse our categories instead? Or perhaps I can help you find something similar?`;
           }
         } else {
-          response = "What would you like to search for? You can tell me a product name or category.";
+          response = "What would you like to search for? You can tell me a product name, category, or even describe what you're looking for, and I'll help you find it.";
         }
+      }
+      else if (lowerQuery.includes('hello') || lowerQuery.includes('hi ') || lowerQuery === 'hi' || lowerQuery.includes('hey')) {
+        const greetings = [
+          `Hi there! How can I help with your shopping today?`,
+          `Hello! I'm your shopping assistant. What are you looking for today?`,
+          `Hey! I'm here to help you find the perfect products. What do you need?`,
+          `Hi! How can I assist with your shopping experience today?`
+        ];
+        
+        response = greetings[Math.floor(Math.random() * greetings.length)];
+        
+        if (user) {
+          response += ` It's great to see you${user.name ? ', ' + user.name : ''}!`;
+        }
+      }
+      else if (lowerQuery.includes('thank') || lowerQuery.includes('thanks')) {
+        response = "You're welcome! I'm happy to help. Is there anything else you'd like to know about our products?";
       }
       else {
         // Generic responses for other queries
         const genericResponses = [
-          "How can I help with your shopping today? Looking for something specific?",
-          "Would you like me to recommend some popular items or help you find a specific product?",
-          "I can show you our best deals or help you search for products. What would you prefer?",
-          "I'm here to assist with your shopping. Do you have something particular in mind?",
-          "How may I assist you today? I can help find products, suggest alternatives, or show you our latest deals."
+          "How can I help with your shopping today? Are you looking for something specific?",
+          "Would you like me to recommend some of our popular items or help you find something in particular?",
+          "I can show you our best deals or help you search for specific products. What would you prefer?",
+          "I'm here to assist with your shopping. Let me know if you're looking for a particular item or category.",
+          "Can I help you find specific products or suggest items based on your preferences?"
         ];
         
         response = genericResponses[Math.floor(Math.random() * genericResponses.length)];
@@ -285,17 +303,17 @@ const AIAssistantChat = () => {
                 className="flex items-center gap-1 whitespace-nowrap"
                 onClick={() => processUserQuery("Show all products")}
               >
-                <Search className="h-3 w-3" />
+                <ShoppingBag className="h-3 w-3" />
                 All Products
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="flex items-center gap-1 whitespace-nowrap"
-                onClick={() => processUserQuery("Help me find accessories")}
+                onClick={() => processUserQuery("Help me find a shirt")}
               >
                 <Search className="h-3 w-3" />
-                Accessories
+                Find Shirts
               </Button>
             </div>
             
@@ -338,7 +356,7 @@ const AIAssistantChat = () => {
                   ref={inputRef}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Type your message..."
+                  placeholder="Ask about products, styles, deals..."
                   className="flex-1"
                 />
                 <Button type="submit" size="icon" disabled={!inputValue.trim()}>

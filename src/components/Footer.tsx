@@ -1,9 +1,33 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 
 const Footer = () => {
+  const { toast } = useToast();
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+
+  const handleSubmitContact = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // In real app, this would send email to the specified address
+    toast({
+      title: "Message sent!",
+      description: "Your message has been sent to gowtham0055@gmail.com",
+    });
+
+    // Reset form
+    setContactName('');
+    setContactEmail('');
+    setContactMessage('');
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -40,6 +64,16 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/products" className="text-gray-400 hover:text-white transition-colors">
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link to="/deals" className="text-gray-400 hover:text-white transition-colors">
+                  Today's Deals
+                </Link>
+              </li>
+              <li>
                 <Link to="/category/stationery" className="text-gray-400 hover:text-white transition-colors">
                   Stationery
                 </Link>
@@ -50,18 +84,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/deals" className="text-gray-400 hover:text-white transition-colors">
-                  Today's Deals
-                </Link>
-              </li>
-              <li>
                 <Link to="/about" className="text-gray-400 hover:text-white transition-colors">
                   About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors">
-                  Contact
                 </Link>
               </li>
             </ul>
@@ -99,29 +123,57 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info & Form */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-3 mb-4">
               <li className="flex items-start">
                 <MapPin className="mr-2 h-5 w-5 text-gray-400 mt-0.5" />
                 <span className="text-gray-400">
-                  123 Market Street, Suite 456<br />San Francisco, CA 94103
+                  No.4 1st Street, Krishna Nagar<br />Nerkundram, Chennai 107
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="mr-2 h-5 w-5 text-gray-400" />
-                <a href="tel:+11234567890" className="text-gray-400 hover:text-white transition-colors">
-                  +1 (123) 456-7890
+                <a href="tel:+918754841588" className="text-gray-400 hover:text-white transition-colors">
+                  +91 87548 41588
                 </a>
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-5 w-5 text-gray-400" />
-                <a href="mailto:support@trademarket.com" className="text-gray-400 hover:text-white transition-colors">
-                  support@trademarket.com
+                <a href="mailto:gowtham0055@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                  gowtham0055@gmail.com
                 </a>
               </li>
             </ul>
+
+            <form onSubmit={handleSubmitContact} className="mt-4 space-y-3">
+              <Input 
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="Your Name" 
+                className="bg-gray-800 border-gray-700"
+                required
+              />
+              <Input 
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                type="email" 
+                placeholder="Your Email" 
+                className="bg-gray-800 border-gray-700"
+                required
+              />
+              <Textarea 
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Your Message" 
+                className="bg-gray-800 border-gray-700"
+                required
+              />
+              <Button type="submit" className="w-full">
+                <Send className="h-4 w-4 mr-2" /> Send Message
+              </Button>
+            </form>
           </div>
         </div>
 

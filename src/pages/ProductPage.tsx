@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Star, ChevronRight, ShoppingCart, Heart, Truck, Calendar, Clock } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
-import { getProductById, Product, getProductsByCategory } from '@/data/products';
+import { getProductById, Product, getProductsByCategory, getRelatedProducts } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -65,10 +65,8 @@ const ProductPage: React.FC = () => {
           setSelectedColor(enhancedProduct.colors[0]);
         }
         
-        // Get related products from the same category
-        const related = getProductsByCategory(enhancedProduct.category)
-          .filter(p => p.id !== enhancedProduct.id)
-          .slice(0, 4);
+        // Get related products that match name keywords or from the same category
+        const related = getRelatedProducts(enhancedProduct, 4);
         setRelatedProducts(related);
       }
     }
@@ -82,7 +80,9 @@ const ProductPage: React.FC = () => {
         price: product.price,
         image: product.images[0],
         quantity: quantity,
-        category: product.category
+        category: product.category,
+        size: selectedSize,
+        color: selectedColor
       });
     }
   };
@@ -319,7 +319,17 @@ const ProductPage: React.FC = () => {
                 </div>
                 
                 <div className="bg-muted p-4 rounded-lg">
-                  <p className="italic text-muted-foreground">Sample review: This product exceeded my expectations! Great value for money and fast delivery.</p>
+                  <p className="font-medium">Verified Purchase</p>
+                  <p className="italic text-muted-foreground mt-1">This product exceeded my expectations! Great value for money and fast delivery.</p>
+                </div>
+
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">Write a Review</p>
+                    <Badge>Purchased Product</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">Share your experience with this product with other customers</p>
+                  <Button size="sm" variant="outline" className="mt-2">Write a Review</Button>
                 </div>
               </div>
             </TabsContent>
@@ -330,7 +340,7 @@ const ProductPage: React.FC = () => {
       <Separator className="my-8" />
 
       <div>
-        <h2 className="text-2xl font-semibold mb-4 font-poppins">Related Products</h2>
+        <h2 className="text-2xl font-semibold mb-4 font-poppins">Similar Products</h2>
         {relatedProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {relatedProducts.map((relatedProduct) => (

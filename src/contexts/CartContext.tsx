@@ -9,6 +9,8 @@ export type CartItem = {
   image: string;
   quantity: number;
   category: string;
+  size?: string;
+  color?: string;
 };
 
 type CartContextType = {
@@ -49,26 +51,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addItem = (item: CartItem) => {
     setItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
+      // Check if the same product with same size/color already exists
+      const existingItemIndex = prevItems.findIndex(i => 
+        i.id === item.id && 
+        i.size === item.size && 
+        i.color === item.color
+      );
       
-      if (existingItem) {
+      if (existingItemIndex !== -1) {
         toast({
           title: "Item Updated",
-          description: `${item.name} quantity increased to ${existingItem.quantity + 1}`,
+          description: `${item.name} quantity increased to ${prevItems[existingItemIndex].quantity + 1}`,
         });
         
-        return prevItems.map(i => 
-          i.id === item.id 
-            ? { ...i, quantity: i.quantity + 1 } 
-            : i
-        );
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + 1
+        };
+        return updatedItems;
       } else {
+        const itemDescription = `${item.name}${item.size ? ` (Size: ${item.size})` : ''}${item.color ? ` (Color: ${item.color})` : ''}`;
+        
         toast({
           title: "Item Added",
-          description: `${item.name} added to your cart`,
+          description: `${itemDescription} added to your cart`,
         });
         
-        return [...prevItems, { ...item, quantity: 1 }];
+        return [...prevItems, { ...item, quantity: item.quantity || 1 }];
       }
     });
   };

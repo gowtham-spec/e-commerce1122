@@ -15,11 +15,11 @@ const TodayDeals = () => {
   const navigate = useNavigate();
   const [displayedDeals, setDisplayedDeals] = useState<DealItem[]>([]);
   
-  // On component mount, randomly select 4 deals to display
+  // On component mount, randomly select 3 deals to display
   useEffect(() => {
-    // Shuffle array and take first 4
+    // Shuffle array and take first 3
     const shuffled = [...dealsData].sort(() => 0.5 - Math.random());
-    setDisplayedDeals(shuffled.slice(0, 4));
+    setDisplayedDeals(shuffled.slice(0, 3));
   }, []);
   
   // Calculate time remaining until midnight
@@ -92,7 +92,7 @@ const TodayDeals = () => {
       </div>
       
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
         variants={container}
         initial="hidden"
         animate="show"
