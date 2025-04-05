@@ -34,7 +34,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">TradeMarket</h3>
+            <h3 className="text-xl font-bold mb-4">ValueMarket</h3>
             <p className="text-gray-400 mb-4">
               Your one-stop shop for high-quality stationery and home appliances.
             </p>
@@ -178,7 +178,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} TradeMarket. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ValueMarket. All rights reserved.</p>
           <p className="mt-2 text-sm">
             The ultimate destination for stationery and home appliances.
           </p>

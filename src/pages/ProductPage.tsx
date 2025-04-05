@@ -8,12 +8,13 @@ import { Separator } from '@/components/ui/separator';
 import { Star, ChevronRight, ShoppingCart, Heart, Truck, Calendar, Clock } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
-import { getProductById, Product, getProductsByCategory, getRelatedProducts } from '@/data/products';
+import { getProductById, Product, getRelatedProducts } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Ensure every product has at least 3 images
 const ensureMultipleImages = (product: Product) => {
@@ -31,6 +32,7 @@ const ensureMultipleImages = (product: Product) => {
 
 const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedImage, setSelectedImage] = useState<string>('');
@@ -323,14 +325,23 @@ const ProductPage: React.FC = () => {
                   <p className="italic text-muted-foreground mt-1">This product exceeded my expectations! Great value for money and fast delivery.</p>
                 </div>
 
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">Write a Review</p>
-                    <Badge>Purchased Product</Badge>
+                {isAuthenticated ? (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">Write a Review</p>
+                      <Badge>Purchased Product</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">Share your experience with this product with other customers</p>
+                    <Button size="sm" variant="outline" className="mt-2">Write a Review</Button>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">Share your experience with this product with other customers</p>
-                  <Button size="sm" variant="outline" className="mt-2">Write a Review</Button>
-                </div>
+                ) : (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <p className="font-medium">Want to share your opinion?</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      <Link to="/login" className="text-primary hover:underline">Sign in</Link> to write a review
+                    </p>
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>

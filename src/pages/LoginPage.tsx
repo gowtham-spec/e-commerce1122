@@ -15,7 +15,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, socialLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -50,7 +50,11 @@ const LoginPage = () => {
   };
   
   const handleSocialLogin = (provider: string) => {
-    setError(`${provider} login is not implemented yet.`);
+    try {
+      socialLogin(provider);
+    } catch (error: any) {
+      setError(`${provider} login failed: ${error.message}`);
+    }
   };
 
   return (
@@ -134,15 +138,15 @@ const LoginPage = () => {
           </div>
           
           <div className="flex gap-3 mt-6">
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('Facebook')}>
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('facebook')}>
               <Facebook className="h-4 w-4 mr-2" />
               Facebook
             </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('GitHub')}>
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('github')}>
               <Github className="h-4 w-4 mr-2" />
               GitHub
             </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('Google')}>
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('google')}>
               <Mail className="h-4 w-4 mr-2" />
               Google
             </Button>

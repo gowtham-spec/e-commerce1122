@@ -23,6 +23,15 @@ const ShoppingCart = () => {
     totalPrice 
   } = useCart();
 
+  // Format price to Indian Rupees
+  const formatPriceToINR = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price * 83); // Approximate conversion rate from USD to INR
+  };
+
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
@@ -90,9 +99,13 @@ const ShoppingCart = () => {
                             {item.name}
                           </Link>
                         </h3>
-                        <p className="ml-4">${item.price.toFixed(2)}</p>
+                        <p className="ml-4">{formatPriceToINR(item.price)}</p>
                       </div>
-                      <p className="mt-1 text-sm text-muted-foreground">{item.category}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {item.category}
+                        {item.size && ` • Size: ${item.size}`}
+                        {item.color && ` • Color: ${item.color}`}
+                      </p>
                     </div>
                     <div className="flex flex-1 items-end justify-between text-sm mt-2">
                       <div className="flex items-center border rounded-md">
@@ -149,7 +162,7 @@ const ShoppingCart = () => {
             <div className="w-full space-y-4">
               <div className="flex items-center justify-between text-base font-medium">
                 <p>Subtotal</p>
-                <p>${totalPrice.toFixed(2)}</p>
+                <p>{formatPriceToINR(totalPrice)}</p>
               </div>
               <p className="text-sm text-muted-foreground">
                 Shipping and taxes calculated at checkout.

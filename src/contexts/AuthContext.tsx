@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 
 export type User = {
   id: string;
@@ -18,6 +19,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   isLoading: boolean;
+  socialLogin: (provider: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Transform Supabase user to app user format
   const transformUser = (supabaseUser: SupabaseUser | null): User | null => {
@@ -45,8 +48,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
-        setUser(transformUser(session?.user ?? null));
+        const transformedUser = transformUser(session?.user ?? null);
+        setUser(transformedUser);
         setIsLoading(false);
+        
+        // Display welcome toast for new sign-ins
+        if (event === 'SIGNED_IN' && transformedUser) {
+          toast({
+            title: `Welcome, ${transformedUser.name}!`,
+            description: "You have successfully signed in.",
+          });
+          navigate('/');
+        }
       }
     );
 
@@ -58,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [toast, navigate]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -69,21 +82,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password
       });
       
-      if (error) throw error;
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
+      if (error) {
+        // More user-friendly error message
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Username or password is incorrect');
+        }
+        throw error;
+      }
     } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: error.message || "Invalid credentials. Please try again.",
+        description: error.message || "Username or password is incorrect",
         variant: "destructive",
       });
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const socialLogin = async (provider: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || `Failed to login with ${provider}`,
+        variant: "destructive",
+      });
+      throw error;
     }
   };
 
@@ -107,13 +141,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) throw error;
       
       toast({
-        title: "Registration Successful",
-        description: "Welcome to TradeMarket!",
+        title: `Welcome to ValueMarket, ${name}!`,
+        description: "Your account has been created successfully.",
       });
+      
+      // Navigate to home page on successful registration
+      navigate('/');
     } catch (error: any) {
       toast({
         title: "Registration Failed",
-        description: error.message || "There was an error registering your account. Please try again.",
+        description: error.message || "There was an error creating your account. Please try again.",
         variant: "destructive",
       });
       throw error;
@@ -147,6 +184,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         register,
         isLoading,
+        socialLogin
       }}
     >
       {children}

@@ -1,97 +1,68 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Shirt, Laptop, ToyBrick, Wrench } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Category } from '@/data/products';
-import { getProductsByCategory } from '@/data/products';
-import ProductCard from '@/components/ProductCard';
 
-type CategoryIconProps = {
-  categoryId: string;
+interface CategoryShowcaseProps {
+  categories: Category[];
   className?: string;
-};
+}
 
-// Component to display the appropriate icon based on category ID
-const CategoryIcon = ({ categoryId, className = "h-5 w-5" }: CategoryIconProps) => {
-  switch (categoryId) {
-    case 'clothing':
-      return <Shirt className={className} />;
-    case 'electronics':
-      return <Laptop className={className} />;
-    case 'toys':
-      return <ToyBrick className={className} />;
-    case 'tools':
-      return <Wrench className={className} />;
-    default:
-      return <ArrowRight className={className} />;
-  }
-};
-
-type CategoryShowcaseProps = {
-  category: Category;
-};
-
-const CategoryShowcase = ({ category }: CategoryShowcaseProps) => {
-  const categoryProducts = getProductsByCategory(category.id).slice(0, 4);
-
-  // Animation variants
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
+const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categories, className = '' }) => {
+  // Function to get a background color based on category name
+  const getCategoryColor = (categoryName: string) => {
+    const colorMap: Record<string, string> = {
+      'electronics': 'bg-blue-100 dark:bg-blue-900/20',
+      'clothing': 'bg-purple-100 dark:bg-purple-900/20',
+      'home': 'bg-green-100 dark:bg-green-900/20',
+      'kitchen': 'bg-yellow-100 dark:bg-yellow-900/20',
+      'books': 'bg-red-100 dark:bg-red-900/20',
+      'sports': 'bg-orange-100 dark:bg-orange-900/20',
+      'toys': 'bg-pink-100 dark:bg-pink-900/20',
+      'beauty': 'bg-teal-100 dark:bg-teal-900/20',
+      'grocery': 'bg-lime-100 dark:bg-lime-900/20',
+      'furniture': 'bg-amber-100 dark:bg-amber-900/20',
+      'stationery': 'bg-cyan-100 dark:bg-cyan-900/20',
+    };
+    
+    const lowerCaseName = categoryName.toLowerCase();
+    
+    for (const [key, value] of Object.entries(colorMap)) {
+      if (lowerCaseName.includes(key)) {
+        return value;
       }
     }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    
+    // Default color if no match
+    return 'bg-gray-100 dark:bg-gray-800/40';
   };
 
   return (
-    <section className="my-12">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <CategoryIcon categoryId={category.id} className="mr-2 h-6 w-6" />
-          <h2 className="text-2xl font-bold">{category.name}</h2>
-        </div>
-        <Button variant="link" asChild>
-          <Link to={`/category/${category.id}`}>View All</Link>
-        </Button>
-      </div>
-
-      <p className="text-muted-foreground mb-6">{category.description}</p>
-
-      <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-        variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-      >
-        {categoryProducts.map((product) => (
-          <motion.div key={product.id} variants={item}>
-            <ProductCard product={product} />
-          </motion.div>
-        ))}
-      </motion.div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        {category.subcategories.map((subcategory) => (
-          <Link 
-            key={subcategory.id} 
-            to={`/category/${category.id}/${subcategory.id}`}
-            className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-800/50 text-purple-800 dark:text-purple-300 rounded-full text-sm font-medium transition-colors"
-          >
-            {subcategory.name}
-          </Link>
-        ))}
-      </div>
-    </section>
+    <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ${className}`}>
+      {categories.map((category) => (
+        <Link to={`/category/${category.id}`} key={category.id}>
+          <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
+            <div className={`relative pt-[56.25%] ${getCategoryColor(category.name)}`}>
+              <img 
+                src={category.image}
+                alt={category.name}
+                className="absolute inset-0 w-full h-full object-contain p-4"
+              />
+            </div>
+            <CardContent className="p-4">
+              <h3 className="font-medium text-center">{category.name}</h3>
+              {/* Only display description if it exists */}
+              {category.description && (
+                <p className="text-sm text-muted-foreground text-center mt-1">
+                  {category.description}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
+    </div>
   );
 };
 
