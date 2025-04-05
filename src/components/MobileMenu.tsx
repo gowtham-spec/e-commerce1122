@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { categories } from '@/data/products';
+import { categoriesEnhanced } from '@/data/products';
 import { useAuth } from '@/contexts/AuthContext';
 import { Home, PackageOpen, HeartIcon, Settings, HelpCircle, LogOut } from 'lucide-react';
 
@@ -57,7 +57,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               </Link>
 
               <Accordion type="single" collapsible className="w-full">
-                {categories.map((category) => (
+                {categoriesEnhanced.map((category) => (
                   <AccordionItem key={category.id} value={category.id} className="border-none">
                     <AccordionTrigger className="py-2 px-0 hover:no-underline">
                       <div className="flex items-center">

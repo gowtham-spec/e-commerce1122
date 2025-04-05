@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ChevronDown, Filter, GridIcon, LayoutList, SlidersHorizontal, X } from 'lucide-react';
-import { products, categories, subcategories, Category, Subcategory, filterProducts, Product } from '@/data/products';
+import { products, categoriesEnhanced, subcategories, Category, Subcategory, filterProducts, Product } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -77,7 +77,7 @@ const CategoryPage = () => {
   // Find current category and its subcategories
   useEffect(() => {
     if (categoryId) {
-      const category = categories.find(c => c.id === categoryId) || null;
+      const category = categoriesEnhanced.find(c => c.id === categoryId) || null;
       setCurrentCategory(category);
       
       const relatedSubcategories = subcategories.filter(s => s.categoryId === categoryId);

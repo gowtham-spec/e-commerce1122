@@ -27,6 +27,7 @@ export interface Category {
   id: string;
   name: string;
   image: string;
+  description: string;
 }
 
 export interface Subcategory {
@@ -38,6 +39,21 @@ export interface Subcategory {
 export const products = productsData;
 export const categories = categoriesData;
 export const subcategories = subcategoriesData;
+
+// We need to enhance the categories with subcategories
+const categoriesWithSubcategories = categories.map(category => {
+  const categorySubcategories = subcategories.filter(
+    subcategory => subcategory.categoryId === category.id
+  );
+  
+  return {
+    ...category,
+    subcategories: categorySubcategories
+  };
+});
+
+// Replace our reference with the enhanced version
+export const categoriesEnhanced = categoriesWithSubcategories;
 
 export const getProductById = (productId: string): Product | undefined => {
   return products.find(product => product.id === productId);
