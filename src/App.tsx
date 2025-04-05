@@ -25,6 +25,11 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DealsPage from "./pages/DealsPage";
 import NotFound from "./pages/NotFound";
 import AIAssistantChat from "./components/AIAssistantChat";
+import FaqPage from "./pages/FaqPage";
+import ShippingPage from "./pages/ShippingPage";
+import ReturnsPage from "./pages/ReturnsPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +61,11 @@ const App = () => (
                       <Route path="/checkout" element={<CheckoutPage />} />
                       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                       <Route path="/deals" element={<DealsPage />} />
+                      <Route path="/faq" element={<FaqPage />} />
+                      <Route path="/shipping" element={<ShippingPage />} />
+                      <Route path="/returns" element={<ReturnsPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>

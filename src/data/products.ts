@@ -1,4 +1,7 @@
-import { products, categories, subcategories } from './products';
+
+import productsData from './productsData';
+import categoriesData from './categoriesData';
+import subcategoriesData from './subcategoriesData';
 
 export interface Product {
   id: string;
@@ -31,6 +34,10 @@ export interface Subcategory {
   categoryId: string;
   name: string;
 }
+
+export const products = productsData;
+export const categories = categoriesData;
+export const subcategories = subcategoriesData;
 
 export const getProductById = (productId: string): Product | undefined => {
   return products.find(product => product.id === productId);
@@ -170,5 +177,3 @@ export const filterProducts = (options: {
     return true;
   });
 };
-
-export { products, categories, subcategories };

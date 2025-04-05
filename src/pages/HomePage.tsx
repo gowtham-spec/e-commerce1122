@@ -108,12 +108,10 @@ const HomePage = () => {
       <TodayDeals />
       
       {/* Popular Categories Showcase */}
-      {categories.map((category) => (
-        <CategoryShowcase 
-          key={category.id}
-          category={category}
-        />
-      ))}
+      <div className="my-12">
+        <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
+        <CategoryShowcase categories={categories} className="mb-8" />
+      </div>
       
       <section className="my-12">
         <div className="flex justify-between items-center mb-6">

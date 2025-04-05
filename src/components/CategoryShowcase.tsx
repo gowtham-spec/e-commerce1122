@@ -52,12 +52,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categories, classNa
             </div>
             <CardContent className="p-4">
               <h3 className="font-medium text-center">{category.name}</h3>
-              {/* Only display description if it exists */}
-              {category.description && (
-                <p className="text-sm text-muted-foreground text-center mt-1">
-                  {category.description}
-                </p>
-              )}
             </CardContent>
           </Card>
         </Link>

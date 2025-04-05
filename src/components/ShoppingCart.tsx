@@ -158,31 +158,29 @@ const ShoppingCart = () => {
         </div>
 
         {items.length > 0 && (
-          <SheetFooter className="border-t pt-4">
-            <div className="w-full space-y-4">
-              <div className="flex items-center justify-between text-base font-medium">
-                <p>Subtotal</p>
-                <p>{formatPriceToINR(totalPrice)}</p>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Shipping and taxes calculated at checkout.
-              </p>
-              <div className="space-y-2">
-                <Button className="w-full" asChild>
-                  <Link to="/checkout" onClick={() => setIsCartOpen(false)}>
-                    Checkout
-                  </Link>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => setIsCartOpen(false)}
-                >
-                  Continue Shopping
-                </Button>
-              </div>
+          <div className="border-t border-border pt-4">
+            <div className="flex justify-between text-base font-medium mb-4">
+              <p>Subtotal</p>
+              <p>{formatPriceToINR(totalPrice)}</p>
             </div>
-          </SheetFooter>
+            <Button 
+              className="w-full bg-purple-gradient hover:shadow-purple-lg" 
+              onClick={() => {
+                setIsCartOpen(false);
+                navigate('/checkout');
+              }}
+            >
+              Checkout
+            </Button>
+            <div className="mt-2 text-center text-sm text-muted-foreground">
+              <p>or <button 
+                className="text-primary hover:underline" 
+                onClick={() => setIsCartOpen(false)}
+              >
+                Continue Shopping
+              </button></p>
+            </div>
+          </div>
         )}
       </SheetContent>
     </Sheet>

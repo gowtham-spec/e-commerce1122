@@ -43,7 +43,7 @@ const LoginPage = () => {
       await login(email, password);
       // No need to navigate here as the auth state listener will trigger the redirect
     } catch (error: any) {
-      setError(error.message || 'Failed to log in. Please check your credentials and try again.');
+      setError(error.message || 'Username or password is incorrect');
     } finally {
       setIsLoading(false);
     }
