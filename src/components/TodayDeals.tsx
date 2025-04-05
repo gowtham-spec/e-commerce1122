@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Timer, Sparkles } from 'lucide-react';
+import { ShoppingCart, Timer, Sparkles, Hourglass } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import dealsData, { DealItem } from '@/data/dealsData';
@@ -43,6 +43,24 @@ const TodayDeals = () => {
     
     return () => clearInterval(timer);
   }, []);
+  
+  // Get limited time offers that end in less than 12 hours
+  const limitedOffers = dealsData
+    .filter(deal => deal.isLimitedOffer)
+    .slice(0, 5);
+
+  // Calculate time left for each limited offer
+  const getOfferTimeLeft = (endsAt: Date) => {
+    const now = new Date();
+    const difference = endsAt.getTime() - now.getTime();
+    
+    if (difference <= 0) return "Expired";
+    
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${minutes}m`;
+  };
   
   const handleAddToCart = (deal: DealItem) => {
     addItem({
@@ -83,13 +101,70 @@ const TodayDeals = () => {
     <section className="my-12 font-poppins">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <h2 className="text-2xl font-bold mr-3">Today's Deals</h2>
+          <h2 className="text-2xl font-bold mr-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">Today's Deals</h2>
           <Badge variant="outline" className="flex items-center gap-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-700">
             <Timer className="h-3 w-3" /> Ends in: {timeLeft}
           </Badge>
         </div>
-        <Button variant="link" onClick={() => navigate('/deals')}>View All Deals</Button>
+        <Button variant="link" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300" onClick={() => navigate('/deals')}>View All Deals</Button>
       </div>
+      
+      {/* Limited Time Offers Section */}
+      {limitedOffers.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Hourglass className="h-5 w-5 text-amber-500 animate-pulse" />
+            <h3 className="font-semibold text-lg">Limited Time Offers</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {limitedOffers.map((offer) => (
+              <div 
+                key={offer.id}
+                className="border rounded-lg p-3 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-200 dark:border-amber-800/30 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/product/${offer.id}`)}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-700">
+                    {offer.discount}% OFF
+                  </Badge>
+                  <Badge variant="destructive" className="flex items-center gap-1 bg-red-500 text-white animate-pulse">
+                    <Timer className="h-3 w-3" /> {getOfferTimeLeft(offer.endsAt)}
+                  </Badge>
+                </div>
+                <div className="w-full h-20 overflow-hidden rounded mb-2">
+                  <img 
+                    src={offer.image} 
+                    alt={offer.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <p className="font-medium text-sm line-clamp-1">{offer.name}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <div>
+                    <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                      {formatPriceToINR(offer.discountedPrice)}
+                    </p>
+                    <p className="text-xs text-gray-500 line-through">
+                      {formatPriceToINR(offer.originalPrice)}
+                    </p>
+                  </div>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    className="h-8 w-8 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(offer);
+                    }}
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       <motion.div 
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"

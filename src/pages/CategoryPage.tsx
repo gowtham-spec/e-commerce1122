@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ChevronDown, Filter, GridIcon, LayoutList, SlidersHorizontal, X } from 'lucide-react';
 import { products, categories, subcategories, Category, Subcategory, filterProducts, Product } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
@@ -194,7 +195,9 @@ const CategoryPage = () => {
           {currentCategory?.name || 'All Products'}
         </h1>
         {currentCategory && (
-          <p className="text-gray-600 mt-2">{currentCategory.description || `Browse our selection of ${currentCategory.name} products`}</p>
+          <p className="text-gray-600 mt-2">
+            {currentCategory.description || `Browse our selection of ${currentCategory.name} products`}
+          </p>
         )}
       </div>
 
@@ -234,48 +237,6 @@ const CategoryPage = () => {
 
             <Separator />
             
-            {/* Price Range */}
-            <div>
-              <h3 className="font-medium mb-3">Price Range</h3>
-              <div className="px-2">
-                <Slider
-                  min={minPrice}
-                  max={maxPrice}
-                  step={1}
-                  value={priceRange}
-                  onValueChange={(value: [number, number]) => setPriceRange(value)}
-                  className="mb-4"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="w-20">
-                  <Input
-                    type="number"
-                    value={priceRange[0]}
-                    onChange={(e) => 
-                      setPriceRange([parseInt(e.target.value), priceRange[1]])
-                    }
-                    min={minPrice}
-                    max={priceRange[1] - 1}
-                  />
-                </div>
-                <span>to</span>
-                <div className="w-20">
-                  <Input
-                    type="number"
-                    value={priceRange[1]}
-                    onChange={(e) => 
-                      setPriceRange([priceRange[0], parseInt(e.target.value)])
-                    }
-                    min={priceRange[0] + 1}
-                    max={maxPrice}
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <Separator />
-
             {/* Brand Filter */}
             <div>
               <h3 className="font-medium mb-3">Brands</h3>
@@ -304,6 +265,25 @@ const CategoryPage = () => {
                   ))}
                 </div>
               </ScrollArea>
+            </div>
+            
+            <Separator />
+            
+            {/* Sort Filter */}
+            <div>
+              <h3 className="font-medium mb-3">Sort By</h3>
+              <Select value={sortOption} onValueChange={setSortOption}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="featured">Featured</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="rating">Highest Rated</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             <Separator />
@@ -432,47 +412,6 @@ const CategoryPage = () => {
               </div>
               <ScrollArea className="flex-1 p-4">
                 <Accordion type="multiple" className="space-y-4">
-                  <AccordionItem value="price">
-                    <AccordionTrigger>Price Range</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="px-2 pt-2">
-                        <Slider
-                          min={minPrice}
-                          max={maxPrice}
-                          step={1}
-                          value={priceRange}
-                          onValueChange={(value: [number, number]) => setPriceRange(value)}
-                          className="mb-4"
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="w-20">
-                          <Input
-                            type="number"
-                            value={priceRange[0]}
-                            onChange={(e) => 
-                              setPriceRange([parseInt(e.target.value), priceRange[1]])
-                            }
-                            min={minPrice}
-                            max={priceRange[1] - 1}
-                          />
-                        </div>
-                        <span>to</span>
-                        <div className="w-20">
-                          <Input
-                            type="number"
-                            value={priceRange[1]}
-                            onChange={(e) => 
-                              setPriceRange([priceRange[0], parseInt(e.target.value)])
-                            }
-                            min={priceRange[0] + 1}
-                            max={maxPrice}
-                          />
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                  
                   <AccordionItem value="brands">
                     <AccordionTrigger>Brands</AccordionTrigger>
                     <AccordionContent>
@@ -495,6 +434,37 @@ const CategoryPage = () => {
                               className="text-sm ml-2"
                             >
                               {brand}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="sort">
+                    <AccordionTrigger>Sort By</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        {[
+                          { value: "featured", label: "Featured" },
+                          { value: "price-low", label: "Price: Low to High" },
+                          { value: "price-high", label: "Price: High to Low" },
+                          { value: "rating", label: "Highest Rated" },
+                          { value: "newest", label: "Newest" }
+                        ].map((option) => (
+                          <div key={option.value} className="flex items-center">
+                            <Checkbox
+                              id={`mobile-sort-${option.value}`}
+                              checked={sortOption === option.value}
+                              onCheckedChange={(checked) => {
+                                if (checked) setSortOption(option.value);
+                              }}
+                            />
+                            <label
+                              htmlFor={`mobile-sort-${option.value}`}
+                              className="text-sm ml-2"
+                            >
+                              {option.label}
                             </label>
                           </div>
                         ))}

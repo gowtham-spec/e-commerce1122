@@ -171,6 +171,56 @@ const Header = () => {
           >
             Today's Deals
           </Link>
+          <Link 
+            to="/category/clothing"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            Clothing
+          </Link>
+          <Link 
+            to="/category/electronics"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            Electronics
+          </Link>
+          <Link 
+            to="/category/furniture"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            Furniture
+          </Link>
+          <Link 
+            to="/category/stationery"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            Stationery
+          </Link>
+          <Link 
+            to="/category/accessories"
+            className={`font-medium whitespace-nowrap transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-purple-400' 
+                : 'text-gray-700 hover:text-primary'
+            }`}
+          >
+            Accessories
+          </Link>
         </nav>
 
         {/* Mobile search bar - only visible on mobile */}

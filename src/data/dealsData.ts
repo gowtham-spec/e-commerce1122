@@ -1,5 +1,4 @@
 
-// Sample deals data
 const sampleDeals = [
   {
     id: 'deal1',
@@ -51,51 +50,104 @@ const sampleDeals = [
   },
   {
     id: 'deal5',
-    name: 'Samsung Galaxy S23 Ultra',
-    originalPrice: 1199,
-    discountedPrice: 949,
-    image: 'https://images.unsplash.com/photo-1610945264803-c22b62d2a7b3?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2Ftc3VuZ3xlbnwwfHwwfHx8MA%3D%3D',
-    discount: 20,
-    category: 'Smartphones',
-    brand: 'Samsung',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: 'Flagship smartphone with 200MP camera and powerful Snapdragon processor.'
+    name: 'Premium Cotton T-Shirt',
+    originalPrice: 39.99,
+    discountedPrice: 24.99,
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop',
+    discount: 38,
+    category: 'Clothing',
+    brand: 'StyleTech',
+    endsAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
+    description: 'Soft and comfortable cotton t-shirt with a modern fit. Perfect for everyday wear.',
+    isLimitedOffer: true
   },
   {
     id: 'deal6',
-    name: 'iPad Pro 12.9" M2',
-    originalPrice: 1099,
-    discountedPrice: 949,
-    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aXBhZHxlbnwwfHwwfHx8MA%3D%3D',
-    discount: 14,
-    category: 'Tablets',
-    brand: 'Apple',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: 'Pro-level tablet with stunning Liquid Retina XDR display and powerful M2 chip.'
+    name: 'Designer Leather Wallet',
+    originalPrice: 89.99,
+    discountedPrice: 59.99,
+    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop',
+    discount: 33,
+    category: 'Accessories',
+    brand: 'LuxuryLeather',
+    endsAt: new Date(Date.now() + 36 * 60 * 60 * 1000),
+    description: 'Handcrafted genuine leather wallet with multiple card slots and premium stitching.'
   },
   {
     id: 'deal7',
-    name: 'Google Pixel 7 Pro',
-    originalPrice: 899,
-    discountedPrice: 699,
-    image: 'https://images.unsplash.com/photo-1635870723802-e88d76ae324e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGl4ZWwlMjBwaG9uZXxlbnwwfHwwfHx8MA%3D%3D',
-    discount: 22,
-    category: 'Smartphones',
-    brand: 'Google',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: "Google's flagship phone with amazing camera capabilities and pure Android experience."
+    name: 'Hardcover Notebook - Dotted',
+    originalPrice: 24.99,
+    discountedPrice: 18.99,
+    image: 'https://images.unsplash.com/photo-1531346680769-a1e79e0fb1b5?w=800&auto=format&fit=crop',
+    discount: 24,
+    category: 'Stationery',
+    brand: 'PaperCraft',
+    endsAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+    description: 'Premium dotted notebook with thick paper and lay-flat binding, perfect for bullet journaling.'
   },
   {
     id: 'deal8',
-    name: 'Dell XPS 15',
-    originalPrice: 1799,
-    discountedPrice: 1499,
-    image: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D',
-    discount: 17,
-    category: 'Laptops',
-    brand: 'Dell',
-    endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    description: 'Premium Windows laptop with incredible 4K display and powerful performance.'
+    name: 'Wireless Gaming Mouse',
+    originalPrice: 59.99,
+    discountedPrice: 39.99,
+    image: 'https://images.unsplash.com/photo-1605773527852-c546a8584ea3?w=800&auto=format&fit=crop',
+    discount: 33,
+    category: 'Peripherals',
+    brand: 'GameTech',
+    endsAt: new Date(Date.now() + 10 * 60 * 60 * 1000),
+    description: 'High precision wireless mouse designed for gamers with programmable buttons and RGB lighting.',
+    isLimitedOffer: true
+  },
+  {
+    id: 'deal9',
+    name: 'Luxury Perfume - Ocean Breeze',
+    originalPrice: 120,
+    discountedPrice: 89.99,
+    image: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&auto=format&fit=crop',
+    discount: 25,
+    category: 'Fragrances',
+    brand: 'AuraScent',
+    endsAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
+    description: 'Premium fragrance with notes of citrus, jasmine, and amber for a refreshing scent.',
+    isLimitedOffer: true
+  },
+  {
+    id: 'deal10',
+    name: 'Premium Blue Denim Jeans',
+    originalPrice: 119.99,
+    discountedPrice: 89.99,
+    image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop',
+    discount: 25,
+    category: 'Clothing',
+    brand: 'DenimCo',
+    endsAt: new Date(Date.now() + 16 * 60 * 60 * 1000),
+    description: 'Classic fit denim jeans made from high-quality cotton with stylish wash and details.'
+  },
+  {
+    id: 'deal11',
+    name: 'Smart LED TV - 55 inch',
+    originalPrice: 799.99,
+    discountedPrice: 649.99,
+    image: 'https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?w=800&auto=format&fit=crop',
+    discount: 19,
+    category: 'Electronics',
+    brand: 'VisionTech',
+    endsAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+    description: '4K Ultra HD Smart TV with HDR and built-in streaming apps for premium entertainment.',
+    isLimitedOffer: true
+  },
+  {
+    id: 'deal12',
+    name: 'Leather Watch - Classic Edition',
+    originalPrice: 199.99,
+    discountedPrice: 159.99,
+    image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&auto=format&fit=crop',
+    discount: 20,
+    category: 'Accessories',
+    brand: 'TimeMaster',
+    endsAt: new Date(Date.now() + 5 * 60 * 60 * 1000),
+    description: 'Classic analog watch with genuine leather strap and stainless steel case.',
+    isLimitedOffer: true
   }
 ];
 
