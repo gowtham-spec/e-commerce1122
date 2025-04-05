@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sheet, 
@@ -10,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { Trash2, Minus, Plus, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ShoppingCart = () => {
   const { 
@@ -22,6 +21,7 @@ const ShoppingCart = () => {
     clearCart,
     totalPrice 
   } = useCart();
+  const navigate = useNavigate();
 
   // Format price to Indian Rupees
   const formatPriceToINR = (price: number) => {

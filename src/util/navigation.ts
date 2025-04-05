@@ -1,8 +1,7 @@
 
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction } from 'react-router-dom';
 
-// Export the navigation function to be used across components
-export const navigate = (path: string) => {
-  const navigate = useNavigate();
+// Instead of directly using useNavigate, we'll create a function that accepts a navigate function
+export const navigateTo = (navigate: NavigateFunction, path: string) => {
   navigate(path);
 };

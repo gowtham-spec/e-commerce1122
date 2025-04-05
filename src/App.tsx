@@ -37,10 +37,10 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
                 <div className="flex flex-col min-h-screen">
                   <Header />
                   <ShoppingCart />
@@ -72,12 +72,12 @@ const App = () => (
                   <Footer />
                   <AIAssistantChat />
                 </div>
-              </BrowserRouter>
-              <Toaster />
-              <Sonner />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+                <Toaster />
+                <Sonner />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
