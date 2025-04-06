@@ -31,19 +31,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
-  const [imageIndex, setImageIndex] = React.useState(0);
   const [imageError, setImageError] = React.useState(false);
   const [heartAnimation, setHeartAnimation] = React.useState(false);
 
   // Check for image loading errors
   const handleImageError = () => {
-    if (imageIndex < product.images.length - 1) {
-      // Try next image
-      setImageIndex(imageIndex + 1);
-    } else {
-      // All images failed, show fallback
-      setImageError(true);
-    }
+    setImageError(true);
   };
 
   // Format price to INR
@@ -76,8 +69,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const handleWishlistToggle = () => {
+    // Enhanced heart animation
     setHeartAnimation(true);
-    setTimeout(() => setHeartAnimation(false), 500);
+    setTimeout(() => setHeartAnimation(false), 800);
 
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
@@ -99,7 +93,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const fallbackImage = "/placeholder.svg";
-  const currentImage = imageError ? fallbackImage : product.images[imageIndex];
+  const currentImage = imageError ? fallbackImage : product.images[0]; // Use only the first image, no more cycling through images
 
   return (
     <div className="product-card rounded-lg overflow-hidden border shadow-sm transition-all duration-300 flex flex-col h-full">
@@ -132,11 +126,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           variant="ghost"
           className={`absolute top-2 right-2 bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700 rounded-full h-8 w-8 ${
             isInWishlist(product.id) ? "text-red-500" : "text-gray-500"
-          } ${heartAnimation ? "heart-animation" : ""}`}
+          } ${heartAnimation ? "heart-beat-animation" : ""}`}
           onClick={handleWishlistToggle}
         >
           <Heart
-            className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`}
+            className={`h-5 w-5 transition-all ${isInWishlist(product.id) ? "fill-current" : ""} ${
+              heartAnimation ? "heart-pulse" : ""
+            }`}
           />
         </Button>
       </div>

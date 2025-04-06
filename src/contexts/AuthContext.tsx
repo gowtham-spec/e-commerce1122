@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password
       });
@@ -87,10 +87,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Username or password is incorrect');
         }
-        if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please check your email to confirm your account before signing in.');
-        }
+        // Remove this condition to avoid showing email confirmation message when it's not needed
+        // The Supabase auth will handle this automatically
         throw error;
+      }
+      
+      // If login is successful but no session, something is wrong
+      if (!data.session) {
+        throw new Error('No session returned from login');
       }
     } catch (error: any) {
       toast({

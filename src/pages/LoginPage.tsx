@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { Facebook, Github, Mail, ArrowRight, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const LoginPage = () => {
@@ -44,13 +44,9 @@ const LoginPage = () => {
       await login(email, password);
       // No need to navigate here as the auth state listener will trigger the redirect
     } catch (error: any) {
-      // Check if the error message contains "email not confirmed"
-      if (error.message.toLowerCase().includes("email not confirmed") || 
-          error.message.toLowerCase().includes("email confirmation")) {
-        setError('Please check your email to confirm your account before signing in.');
-      } else {
-        setError(error.message || 'Username or password is incorrect');
-      }
+      // Better error handling to avoid showing email confirmation message unnecessarily
+      console.error("Login error:", error.message);
+      setError(error.message || 'Username or password is incorrect');
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +63,10 @@ const LoginPage = () => {
   return (
     <motion.div 
       className="container mx-auto py-6 md:py-12 px-4 max-w-md"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <div className="text-center mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-2 purple-gradient-text">Sign In to ValueMarket</h1>
@@ -80,18 +77,21 @@ const LoginPage = () => {
       
       <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-purple-100 dark:border-purple-900/30">
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <Alert variant="destructive" className="text-sm">
-                <AlertCircle className="h-4 w-4 mr-2" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Alert variant="destructive" className="text-sm">
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

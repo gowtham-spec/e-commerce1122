@@ -4,10 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
+import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ShoppingCart from "./components/ShoppingCart";
@@ -34,6 +35,40 @@ import ContactPage from "./pages/ContactPage";
 
 const queryClient = new QueryClient();
 
+// AnimatedRoutes component to handle page transitions
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/product/:productId" element={<ProductPage />} />
+        <Route path="/products" element={<CategoryPage />} />
+        <Route path="/category" element={<CategoryPage />} />
+        <Route path="/category/:categoryId" element={<CategoryPage />} />
+        <Route path="/category/:categoryId/:subcategoryId" element={<CategoryPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        <Route path="/deals" element={<DealsPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/shipping" element={<ShippingPage />} />
+        <Route path="/returns" element={<ReturnsPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -46,30 +81,7 @@ const App = () => (
                   <Header />
                   <ShoppingCart />
                   <main className="flex-1">
-                    <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/product/:productId" element={<ProductPage />} />
-                      <Route path="/products" element={<CategoryPage />} />
-                      <Route path="/category" element={<CategoryPage />} />
-                      <Route path="/category/:categoryId" element={<CategoryPage />} />
-                      <Route path="/category/:categoryId/:subcategoryId" element={<CategoryPage />} />
-                      <Route path="/search" element={<SearchPage />} />
-                      <Route path="/wishlist" element={<WishlistPage />} />
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/register" element={<RegisterPage />} />
-                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                      <Route path="/reset-password" element={<ResetPasswordPage />} />
-                      <Route path="/checkout" element={<CheckoutPage />} />
-                      <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-                      <Route path="/deals" element={<DealsPage />} />
-                      <Route path="/faq" element={<FaqPage />} />
-                      <Route path="/shipping" element={<ShippingPage />} />
-                      <Route path="/returns" element={<ReturnsPage />} />
-                      <Route path="/terms" element={<TermsPage />} />
-                      <Route path="/privacy" element={<PrivacyPage />} />
-                      <Route path="/contact" element={<ContactPage />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                    <AnimatedRoutes />
                   </main>
                   <Footer />
                   <AIAssistantChat />
