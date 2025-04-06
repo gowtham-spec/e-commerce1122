@@ -1,4 +1,3 @@
-
 const productsData = [
   {
     id: "p1",
@@ -482,7 +481,113 @@ const productsData = [
       clasp: "Lobster clasp",
       weight: "8g"
     }
-  }
-];
-
-export default productsData;
+  },
+  
+  // Additional Clothing Products (15)
+  {
+    id: "p21",
+    name: "Premium Hooded Sweatshirt",
+    description: "Comfortable hooded sweatshirt with front pocket and adjustable drawstrings.",
+    price: 49.99,
+    images: [
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1577208288347-b24488f3fb9a?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=800&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    subcategory: "hoodies",
+    brand: "StyleComfort",
+    rating: 4.6,
+    reviewCount: 142,
+    stock: 38,
+    featured: false,
+    colors: ["Black", "Gray", "Navy", "Burgundy"],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    specifications: {
+      material: "80% Cotton, 20% Polyester",
+      fit: "Regular",
+      care: "Machine wash cold"
+    }
+  },
+  {
+    id: "p22",
+    name: "Slim Fit Dress Shirt",
+    description: "Wrinkle-resistant dress shirt with modern slim fit and spread collar.",
+    price: 59.99,
+    images: [
+      "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1589310243389-96a5483213a8?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1563630423918-b58f07336ac9?w=800&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    subcategory: "shirts",
+    brand: "FormalEdge",
+    rating: 4.7,
+    reviewCount: 98,
+    stock: 42,
+    featured: false,
+    colors: ["White", "Light Blue", "Pink", "Lavender"],
+    sizes: ["15", "15.5", "16", "16.5", "17", "17.5"],
+    specifications: {
+      material: "100% Cotton",
+      fit: "Slim",
+      care: "Machine wash cold, tumble dry low"
+    }
+  },
+  {
+    id: "p23",
+    name: "Athletic Performance Shorts",
+    description: "Lightweight, quick-drying shorts with built-in liner for maximum comfort during workouts.",
+    price: 34.99,
+    images: [
+      "https://images.unsplash.com/photo-1571078358209-552b909e4a48?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1594394489098-74349f1335a6?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    subcategory: "shorts",
+    brand: "AthleteFirst",
+    rating: 4.5,
+    reviewCount: 173,
+    stock: 67,
+    featured: false,
+    colors: ["Black", "Navy", "Gray", "Royal Blue"],
+    sizes: ["S", "M", "L", "XL"],
+    specifications: {
+      material: "92% Polyester, 8% Spandex",
+      inseam: "7 inches",
+      feature: "Moisture-wicking"
+    }
+  },
+  {
+    id: "p24",
+    name: "Quilted Winter Jacket",
+    description: "Water-resistant quilted jacket with thermal insulation for cold weather protection.",
+    price: 129.99,
+    images: [
+      "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1610652492500-ded49ceeb378?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=800&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    subcategory: "jackets",
+    brand: "WinterShield",
+    rating: 4.8,
+    reviewCount: 87,
+    stock: 19,
+    featured: true,
+    colors: ["Black", "Olive", "Navy", "Burgundy"],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    specifications: {
+      material: "Shell: 100% Nylon, Fill: 100% Polyester",
+      features: "Water-resistant, Thermal insulation",
+      care: "Machine wash gentle cycle"
+    }
+  },
+  {
+    id: "p25",
+    name: "Stretch Yoga Pants",
+    description: "High-waisted yoga pants with four-way stretch fabric and hidden pocket.",
+    price: 44.99,
+    images: [
+      "
