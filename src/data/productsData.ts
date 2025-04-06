@@ -482,8 +482,6 @@ const productsData = [
       weight: "8g"
     }
   },
-  
-  // Additional Clothing Products (15)
   {
     id: "p21",
     name: "Premium Hooded Sweatshirt",
@@ -590,4 +588,26 @@ const productsData = [
     description: "High-waisted yoga pants with four-way stretch fabric and hidden pocket.",
     price: 44.99,
     images: [
-      "
+      "https://images.unsplash.com/photo-1552881138-7df945af8d52?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1594142789235-84fc9f54c02d?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1590245790556-b9bea8630b9e?w=800&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    subcategory: "pants",
+    brand: "FlexFit",
+    rating: 4.6,
+    reviewCount: 219,
+    stock: 48,
+    featured: false,
+    colors: ["Black", "Gray", "Navy", "Burgundy"],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    specifications: {
+      material: "75% Polyester, 25% Spandex",
+      rise: "High",
+      length: "Full length",
+      feature: "Four-way stretch, Hidden pocket"
+    }
+  }
+];
+
+export default productsData;
