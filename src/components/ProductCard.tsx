@@ -29,7 +29,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
-  const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
   const [imageIndex, setImageIndex] = React.useState(0);
   const [imageError, setImageError] = React.useState(false);
