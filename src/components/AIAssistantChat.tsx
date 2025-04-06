@@ -40,7 +40,10 @@ const AIAssistantChat = () => {
     
     // Scroll to the bottom when messages update
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+      const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
     }
 
     // Add personalized greeting if user is logged in and it's their first time opening the chat
@@ -54,6 +57,11 @@ const AIAssistantChat = () => {
       setMessages(prev => [...prev, greeting]);
     }
   }, [isOpen, messages, user]);
+
+  // Toggle chat open/close on icon click
+  const toggleChat = () => {
+    setIsOpen(prev => !prev);
+  };
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -248,7 +256,7 @@ const AIAssistantChat = () => {
         )}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
+        onClick={toggleChat}
       >
         <MessageCircle className="h-6 w-6" />
       </motion.button>
@@ -318,7 +326,7 @@ const AIAssistantChat = () => {
             </div>
             
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4 max-h-[400px]" ref={scrollAreaRef as any}>
+            <ScrollArea className="flex-1 p-4 h-[300px] max-h-[400px] overflow-y-auto" ref={scrollAreaRef as any}>
               <div className="flex flex-col gap-3">
                 {messages.map((message) => (
                   <motion.div

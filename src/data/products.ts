@@ -28,6 +28,7 @@ export interface Category {
   name: string;
   image: string;
   description: string;
+  subcategories?: Subcategory[];
 }
 
 export interface Subcategory {
@@ -155,8 +156,9 @@ export const filterProducts = (options: {
   minRating?: number;
   brands?: string[];
   inStock?: boolean;
+  sortBy?: 'price-low-high' | 'price-high-low' | 'rating' | 'popularity';
 }): Product[] => {
-  return products.filter(product => {
+  let filteredProducts = products.filter(product => {
     // Category filter
     if (options.category && product.category !== options.category) {
       return false;
@@ -192,4 +194,24 @@ export const filterProducts = (options: {
     
     return true;
   });
+
+  // Apply sorting
+  if (options.sortBy) {
+    switch (options.sortBy) {
+      case 'price-low-high':
+        filteredProducts.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high-low':
+        filteredProducts.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        filteredProducts.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'popularity':
+        filteredProducts.sort((a, b) => b.reviewCount - a.reviewCount);
+        break;
+    }
+  }
+  
+  return filteredProducts;
 };

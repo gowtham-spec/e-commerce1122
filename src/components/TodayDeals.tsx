@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -15,14 +14,11 @@ const TodayDeals = () => {
   const navigate = useNavigate();
   const [displayedDeals, setDisplayedDeals] = useState<DealItem[]>([]);
   
-  // On component mount, randomly select 3 deals to display
   useEffect(() => {
-    // Shuffle array and take first 3
     const shuffled = [...dealsData].sort(() => 0.5 - Math.random());
     setDisplayedDeals(shuffled.slice(0, 3));
   }, []);
   
-  // Calculate time remaining until midnight
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
@@ -44,12 +40,10 @@ const TodayDeals = () => {
     return () => clearInterval(timer);
   }, []);
   
-  // Get limited time offers that end in less than 12 hours
   const limitedOffers = dealsData
     .filter(deal => deal.isLimitedOffer)
     .slice(0, 5);
 
-  // Calculate time left for each limited offer
   const getOfferTimeLeft = (endsAt: Date) => {
     const now = new Date();
     const difference = endsAt.getTime() - now.getTime();
@@ -73,13 +67,12 @@ const TodayDeals = () => {
     });
   };
 
-  // Format price to Indian Rupees
   const formatPriceToINR = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
-    }).format(price * 83); // Approximate conversion rate from USD to INR
+    }).format(price * 83);
   };
 
   const container = {
@@ -109,22 +102,21 @@ const TodayDeals = () => {
         <Button variant="link" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300" onClick={() => navigate('/deals')}>View All Deals</Button>
       </div>
       
-      {/* Limited Time Offers Section */}
       {limitedOffers.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <Hourglass className="h-5 w-5 text-amber-500 animate-pulse" />
+            <Hourglass className="h-5 w-5 text-purple-500 animate-pulse" />
             <h3 className="font-semibold text-lg">Limited Time Offers</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {limitedOffers.map((offer) => (
               <div 
                 key={offer.id}
-                className="border rounded-lg p-3 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-200 dark:border-amber-800/30 hover:shadow-md transition-shadow cursor-pointer"
+                className="border rounded-lg p-3 bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-800/10 border-purple-200 dark:border-purple-800/30 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => navigate(`/product/${offer.id}`)}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-700">
+                  <Badge variant="outline" className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-700">
                     {offer.discount}% OFF
                   </Badge>
                   <Badge variant="destructive" className="flex items-center gap-1 bg-red-500 text-white animate-pulse">

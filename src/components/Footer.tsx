@@ -1,32 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Footer = () => {
   const { toast } = useToast();
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
-
-  const handleSubmitContact = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // In real app, this would send email to the specified address
-    toast({
-      title: "Message sent!",
-      description: "Your message has been sent to gowtham0055@gmail.com",
-    });
-
-    // Reset form
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
-  };
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -123,7 +102,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info & Form */}
+          {/* Contact Info */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3 mb-4">
@@ -145,35 +124,15 @@ const Footer = () => {
                   gowtham0055@gmail.com
                 </a>
               </li>
+              <li className="mt-4">
+                <Link 
+                  to="/contact" 
+                  className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
-
-            <form onSubmit={handleSubmitContact} className="mt-4 space-y-3">
-              <Input 
-                value={contactName}
-                onChange={(e) => setContactName(e.target.value)}
-                placeholder="Your Name" 
-                className="bg-gray-800 border-gray-700"
-                required
-              />
-              <Input 
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                type="email" 
-                placeholder="Your Email" 
-                className="bg-gray-800 border-gray-700"
-                required
-              />
-              <Textarea 
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-                placeholder="Your Message" 
-                className="bg-gray-800 border-gray-700"
-                required
-              />
-              <Button type="submit" className="w-full">
-                <Send className="h-4 w-4 mr-2" /> Send Message
-              </Button>
-            </form>
           </div>
         </div>
 
