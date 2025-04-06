@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
-import { Facebook, Github, Mail, ArrowRight } from 'lucide-react';
+import { Facebook, Github, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -43,7 +44,13 @@ const LoginPage = () => {
       await login(email, password);
       // No need to navigate here as the auth state listener will trigger the redirect
     } catch (error: any) {
-      setError(error.message || 'Username or password is incorrect');
+      // Check if the error message contains "email not confirmed"
+      if (error.message.toLowerCase().includes("email not confirmed") || 
+          error.message.toLowerCase().includes("email confirmation")) {
+        setError('Please check your email to confirm your account before signing in.');
+      } else {
+        setError(error.message || 'Username or password is incorrect');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -59,28 +66,30 @@ const LoginPage = () => {
 
   return (
     <motion.div 
-      className="container max-w-md mx-auto py-12 px-4"
+      className="container mx-auto py-6 md:py-12 px-4 max-w-md"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2 purple-gradient-text">Sign In to ValueMarket</h1>
-        <p className="text-muted-foreground">
+      <div className="text-center mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2 purple-gradient-text">Sign In to ValueMarket</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           Welcome back! Please login to continue shopping
         </p>
       </div>
       
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-purple-100 dark:border-purple-900/30">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-purple-100 dark:border-purple-900/30">
+        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
           {error && (
             <motion.div 
-              className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-300 p-3 rounded-md text-sm"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
             >
-              {error}
+              <Alert variant="destructive" className="text-sm">
+                <AlertCircle className="h-4 w-4 mr-2" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             </motion.div>
           )}
           
@@ -93,7 +102,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border-purple-100 dark:border-purple-800/40 focus-visible:ring-purple-500"
+              className="border-purple-100 dark:border-purple-800/40 dark:bg-gray-700 dark:text-white focus-visible:ring-purple-500"
             />
           </div>
           
@@ -111,7 +120,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border-purple-100 dark:border-purple-800/40 focus-visible:ring-purple-500"
+              className="border-purple-100 dark:border-purple-800/40 dark:bg-gray-700 dark:text-white focus-visible:ring-purple-500"
             />
           </div>
           
@@ -137,24 +146,24 @@ const LoginPage = () => {
             </div>
           </div>
           
-          <div className="flex gap-3 mt-6">
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('facebook')}>
+          <div className="flex flex-wrap gap-2 md:gap-3 mt-6">
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('facebook')}>
               <Facebook className="h-4 w-4 mr-2" />
-              Facebook
+              <span className="text-xs md:text-sm">Facebook</span>
             </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('github')}>
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('github')}>
               <Github className="h-4 w-4 mr-2" />
-              GitHub
+              <span className="text-xs md:text-sm">GitHub</span>
             </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40" onClick={() => handleSocialLogin('google')}>
+            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('google')}>
               <Mail className="h-4 w-4 mr-2" />
-              Google
+              <span className="text-xs md:text-sm">Google</span>
             </Button>
           </div>
         </div>
       </div>
       
-      <p className="text-center mt-8 text-sm text-muted-foreground">
+      <p className="text-center mt-6 md:mt-8 text-sm text-muted-foreground">
         Don't have an account?{' '}
         <Link to="/register" className="text-primary font-medium hover:underline">
           Sign up

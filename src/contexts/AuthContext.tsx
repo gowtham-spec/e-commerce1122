@@ -87,6 +87,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Username or password is incorrect');
         }
+        if (error.message.includes('Email not confirmed')) {
+          throw new Error('Please check your email to confirm your account before signing in.');
+        }
         throw error;
       }
     } catch (error: any) {

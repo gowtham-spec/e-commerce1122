@@ -33,6 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { toast } = useToast();
   const [imageIndex, setImageIndex] = React.useState(0);
   const [imageError, setImageError] = React.useState(false);
+  const [heartAnimation, setHeartAnimation] = React.useState(false);
 
   // Check for image loading errors
   const handleImageError = () => {
@@ -43,20 +44,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       // All images failed, show fallback
       setImageError(true);
     }
-  };
-
-  // Cycle through images on hover
-  const startImageCycle = () => {
-    if (product.images.length <= 1) return;
-    
-    const interval = setInterval(() => {
-      setImageIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % product.images.length;
-        return nextIndex;
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
   };
 
   // Format price to INR
@@ -89,6 +76,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const handleWishlistToggle = () => {
+    setHeartAnimation(true);
+    setTimeout(() => setHeartAnimation(false), 500);
+
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
       toast({
@@ -115,8 +105,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="product-card rounded-lg overflow-hidden border shadow-sm transition-all duration-300 flex flex-col h-full">
       <div 
         className="product-image-container h-56 relative product-image-hover-effect"
-        onMouseEnter={startImageCycle}
-        onMouseLeave={() => setImageIndex(0)}
       >
         <Link to={`/product/${product.id}`} className="block h-full">
           <img
@@ -144,7 +132,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           variant="ghost"
           className={`absolute top-2 right-2 bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700 rounded-full h-8 w-8 ${
             isInWishlist(product.id) ? "text-red-500" : "text-gray-500"
-          }`}
+          } ${heartAnimation ? "heart-animation" : ""}`}
           onClick={handleWishlistToggle}
         >
           <Heart
