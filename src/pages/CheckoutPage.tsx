@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,10 +31,26 @@ const CheckoutPage = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [animationReady, setAnimationReady] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation after component mounts
+    setAnimationReady(true);
+    
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please login to continue with checkout",
+        variant: "destructive"
+      });
+      navigate('/login', { state: { returnUrl: '/checkout' } });
+    }
+  }, [isAuthenticated, navigate, toast]);
 
   const [contactInfo, setContactInfo] = useState({
-    firstName: user?.name.split(' ')[0] || '',
-    lastName: user?.name.split(' ')[1] || '',
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
     email: user?.email || '',
     phone: ''
   });
@@ -140,7 +156,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className={`container mx-auto py-8 px-4 checkout-container ${animationReady ? 'page-entrance' : 'opacity-0'}`}>
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-muted-foreground mb-8">
         <Link to="/" className="hover:text-primary">Home</Link>
@@ -155,9 +171,9 @@ const CheckoutPage = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Checkout form */}
         <div className="lg:w-2/3">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8" id="checkout-form">
             {/* Contact information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm checkout-card">
               <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -206,7 +222,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Shipping information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm checkout-card">
               <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -272,7 +288,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Payment information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm checkout-card">
               <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
               <RadioGroup
                 value={paymentMethod}
@@ -341,7 +357,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Order notes */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm checkout-card">
               <h2 className="text-xl font-semibold mb-4">Order Notes</h2>
               <div className="space-y-2">
                 <Label htmlFor="orderNotes">Additional Information</Label>
@@ -357,7 +373,7 @@ const CheckoutPage = () => {
 
             {/* Mobile Order Summary and Submit Button */}
             <div className="lg:hidden">
-              <Card>
+              <Card className="checkout-card">
                 <CardHeader>
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
@@ -404,7 +420,7 @@ const CheckoutPage = () => {
         {/* Order summary */}
         <div className="lg:w-1/3 hidden lg:block">
           <div className="sticky top-24">
-            <Card>
+            <Card className="checkout-card">
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>

@@ -99,6 +99,11 @@ const Footer = () => {
                   Privacy Policy
                 </Link>
               </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors">
+                  Send Message
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -127,9 +132,10 @@ const Footer = () => {
               <li className="mt-4">
                 <Link 
                   to="/contact" 
-                  className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center"
                 >
-                  Contact Us
+                  <Mail className="mr-2 h-5 w-5" />
+                  Send Message
                 </Link>
               </li>
             </ul>

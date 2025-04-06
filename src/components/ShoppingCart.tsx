@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Sheet, 
@@ -10,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { Trash2, Minus, Plus, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/ui/use-toast';
 
 const ShoppingCart = () => {
   const { 
@@ -21,7 +24,9 @@ const ShoppingCart = () => {
     clearCart,
     totalPrice 
   } = useCart();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Format price to Indian Rupees
   const formatPriceToINR = (price: number) => {
@@ -30,6 +35,31 @@ const ShoppingCart = () => {
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(price * 83); // Approximate conversion rate from USD to INR
+  };
+
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      setIsCartOpen(false);
+      navigate('/checkout');
+    } else {
+      setIsCartOpen(false);
+      toast({
+        title: "Login Required",
+        description: "Please login before proceeding to checkout",
+      });
+      navigate('/login', { state: { returnUrl: '/checkout' } });
+    }
+  };
+
+  const handleAddToCartAnimation = (itemId: string) => {
+    // Find the item element
+    const itemElement = document.getElementById(`cart-item-${itemId}`);
+    if (itemElement) {
+      itemElement.classList.remove('add-to-cart-animation');
+      setTimeout(() => {
+        itemElement.classList.add('add-to-cart-animation');
+      }, 10);
+    }
   };
 
   return (
@@ -78,7 +108,8 @@ const ShoppingCart = () => {
               {items.map((item) => (
                 <div 
                   key={item.id}
-                  className="flex border-b border-border pb-4"
+                  id={`cart-item-${item.id}`}
+                  className="flex border-b border-border pb-4 add-to-cart-animation"
                 >
                   <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                     <img
@@ -113,7 +144,10 @@ const ShoppingCart = () => {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 rounded-none rounded-l-md"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => {
+                            updateQuantity(item.id, item.quantity - 1);
+                            handleAddToCartAnimation(item.id);
+                          }}
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-3 w-3" />
@@ -123,7 +157,10 @@ const ShoppingCart = () => {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 rounded-none rounded-r-md"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => {
+                            updateQuantity(item.id, item.quantity + 1);
+                            handleAddToCartAnimation(item.id);
+                          }}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -165,10 +202,7 @@ const ShoppingCart = () => {
             </div>
             <Button 
               className="w-full bg-purple-gradient hover:shadow-purple-lg" 
-              onClick={() => {
-                setIsCartOpen(false);
-                navigate('/checkout');
-              }}
+              onClick={handleCheckout}
             >
               Checkout
             </Button>

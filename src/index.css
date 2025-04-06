@@ -82,6 +82,25 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Poppins', sans-serif;
   }
+  
+  /* Dark mode form inputs */
+  .dark input, .dark textarea, .dark select {
+    @apply bg-gray-800 text-white border-gray-700;
+    color-scheme: dark;
+  }
+  
+  .dark input::placeholder, .dark textarea::placeholder {
+    @apply text-gray-500;
+  }
+  
+  /* Dark mode checkout page */
+  .dark .checkout-container {
+    @apply bg-gray-900;
+  }
+  
+  .dark .checkout-card {
+    @apply bg-gray-800 border-gray-700;
+  }
 }
 
 /* Smooth animations */
@@ -206,4 +225,72 @@
 
 .animate-pulse-purple {
   animation: pulse-purple 2s infinite;
+}
+
+/* Added animations for cart and checkout */
+@keyframes add-to-cart {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.add-to-cart-animation {
+  animation: add-to-cart 0.5s ease-out forwards;
+}
+
+@keyframes page-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-entrance {
+  animation: page-entrance 0.7s ease-out forwards;
+}
+
+/* Image hover animation */
+.product-image-container {
+  overflow: hidden;
+  @apply rounded-t-lg;
+}
+
+.product-image-container img {
+  transition: transform 0.5s ease;
+}
+
+.product-image-container:hover img {
+  transform: scale(1.1);
+}
+
+.product-image-hover-effect {
+  position: relative;
+}
+
+.product-image-hover-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(139, 92, 246, 0) 0%, rgba(139, 92, 246, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-image-hover-effect:hover::after {
+  opacity: 1;
 }
