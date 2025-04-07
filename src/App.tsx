@@ -24,6 +24,7 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DealsPage from "./pages/DealsPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import AIAssistantChat from "./components/AIAssistantChat";
 import FaqPage from "./pages/FaqPage";
@@ -109,6 +110,11 @@ const AnimatedRoutes = () => {
         <Route path="/deals" element={
           <ProtectedRoute>
             <DealsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         } />
 

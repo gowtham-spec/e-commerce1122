@@ -1,254 +1,289 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { formatPriceToINR } from '@/utils/priceFormatter';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { ModeToggle } from "@/components/ModeToggle"
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { useWishlist } from '@/contexts/WishlistContext';
-import { Search, ShoppingCart, Heart, Menu, X, User } from 'lucide-react';
-import MobileMenu from './MobileMenu';
-import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@/contexts/ThemeContext';
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Search, ShoppingCart, Moon, Sun, Menu, User, Settings, HelpCircle } from 'lucide-react';
 
 const Header = () => {
-  const { itemCount, setIsCartOpen } = useCart();
-  const { items: wishlistItems } = useWishlist();
   const { user, isAuthenticated, logout } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
+  const { itemCount, setIsCartOpen } = useCart();
   const { theme } = useTheme();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error: any) {
+      console.error("Logout failed:", error.message);
     }
   };
-  
+
+  const onClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <header className={`${theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} border-b sticky top-0 z-50`}>
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-purple-400' : 'text-primary'}`}>
-              ValueMarket
-            </span>
-          </Link>
+    <header className="bg-background sticky top-0 z-50 w-full border-b">
+      <div className="container flex h-16 items-center justify-between py-4">
+        <Link to="/" className="mr-4 flex items-center font-bold">
+          ValueMarket
+        </Link>
+        <div className="flex items-center space-x-4">
+          <Input type="search" placeholder="Search products..." className="max-w-md hidden md:block" />
+          <ModeToggle />
 
-          {/* Search bar - hidden on mobile */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 mx-8">
-            <div className="relative w-full max-w-lg">
-              <Input
-                type="text"
-                placeholder="Search for products..."
-                className={`w-full pr-10 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : ''}`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button 
-                type="submit"
-                size="icon" 
-                variant="ghost" 
-                className="absolute right-0 top-0 h-full"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            </div>
-          </form>
+          {/* Desktop Navigation */}
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid gap-3 p-4 font-normal md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr repeat(2,1fr)]">
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/products"
+                          className="focus:shadow-none flex h-full width-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <div className="mb-2 mt-4 text-lg font-medium">
+                            New Arrivals
+                          </div>
+                          <p className="text-sm leading-tight text-muted-foreground">
+                            Explore our latest collection of trendy products.
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/category/electronics"
+                          className="group flex h-full select-none items-center rounded-md px-3 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:shadow-none focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          Electronics
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/category/fashion"
+                          className="group flex h-full select-none items-center rounded-md px-3 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:shadow-none focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          Fashion
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/category/home-decor"
+                          className="group flex h-full select-none items-center rounded-md px-3 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:shadow-none focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          Home Decor
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link to="/deals" className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
+                    Deals
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link to="/settings" className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
+                    Settings
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Wishlist */}
-            <Link to="/wishlist" className="relative">
-              <Button variant="ghost" size="icon">
-                <Heart className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
-                {wishlistItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-secondary text-black text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
-                    {wishlistItems.length}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {/* Cart */}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setIsCartOpen(true)}
-              className="relative"
-            >
-              <ShoppingCart className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
-                  {itemCount}
-                </span>
-              )}
-            </Button>
-
-            {/* Account */}
-            {isAuthenticated && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative p-0" aria-label="Account">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-4 py-2">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/account" className="w-full">My Account</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/orders" className="w-full">Orders</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-red-500">
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link to="/login">
-                <Button variant="ghost" size="icon">
-                  <User className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
-                </Button>
-              </Link>
+          {/* Shopping Cart Icon */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCartOpen(true)}
+            className="relative cart-icon"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {itemCount}
+              </span>
             )}
+          </Button>
 
-            {/* Mobile menu toggle */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
-              ) : (
-                <Menu className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-300' : ''}`} />
-              )}
-            </Button>
-          </div>
+          {/* Authentication Dropdown */}
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuHeader className="font-normal">
+                  <div className="flex flex-col space-y-1.5 p-2">
+                    <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+                    <DropdownMenuDescription>
+                      {user?.email}
+                    </DropdownMenuDescription>
+                  </div>
+                </DropdownMenuHeader>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  Profile
+                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Billing
+                  <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Settings
+                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Log out
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/login">
+              <Button>Sign In</Button>
+            </Link>
+          )}
+
+          {/* Mobile Menu */}
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-full sm:w-64">
+              <SheetHeader className="text-left">
+                <SheetTitle>Menu</SheetTitle>
+                <SheetDescription>
+                  Navigate through ValueMarket
+                </SheetDescription>
+              </SheetHeader>
+              <div className="py-4">
+                <Link
+                  to="/"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all hover:text-primary"
+                  onClick={onClose}
+                >
+                  <Home className="h-4 w-4" />
+                  <span>Home</span>
+                </Link>
+                <Link
+                  to="/products"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all hover:text-primary"
+                  onClick={onClose}
+                >
+                  <List className="h-4 w-4" />
+                  <span>Products</span>
+                </Link>
+                <Link
+                  to="/deals"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all hover:text-primary"
+                  onClick={onClose}
+                >
+                  <Percent className="h-4 w-4" />
+                  <span>Deals</span>
+                </Link>
+                <Link
+                  to="/wishlist"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all hover:text-primary"
+                  onClick={onClose}
+                >
+                  <Heart className="h-4 w-4" />
+                  <span>Wishlist</span>
+                </Link>
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all hover:text-primary"
+                  onClick={onClose}
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
+                </Link>
+                <Button variant="ghost" size="sm" className="justify-start">
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  Help & Support
+                </Button>
+              </div>
+              <SheetFooter>
+                {!isAuthenticated && (
+                  <Link to="/login">
+                    <Button className="w-full">Sign In</Button>
+                  </Link>
+                )}
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
-
-        {/* Main navigation menu - desktop */}
-        <nav className="hidden md:flex mt-4 justify-center space-x-6 overflow-x-auto pb-2">
-          <Link 
-            to="/products"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            All Products
-          </Link>
-          <Link 
-            to="/deals"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-purple-400 hover:text-purple-300' 
-                : 'text-secondary hover:text-secondary/80'
-            }`}
-          >
-            Today's Deals
-          </Link>
-          <Link 
-            to="/category/clothing"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            Clothing
-          </Link>
-          <Link 
-            to="/category/electronics"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            Electronics
-          </Link>
-          <Link 
-            to="/category/furniture"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            Furniture
-          </Link>
-          <Link 
-            to="/category/stationery"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            Stationery
-          </Link>
-          <Link 
-            to="/category/accessories"
-            className={`font-medium whitespace-nowrap transition-colors ${
-              theme === 'dark' 
-                ? 'text-gray-300 hover:text-purple-400' 
-                : 'text-gray-700 hover:text-primary'
-            }`}
-          >
-            Accessories
-          </Link>
-        </nav>
-
-        {/* Mobile search bar - only visible on mobile */}
-        <form onSubmit={handleSearch} className="mt-4 md:hidden">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search for products..."
-              className={`w-full pr-10 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : ''}`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button 
-              type="submit"
-              size="icon" 
-              variant="ghost" 
-              className="absolute right-0 top-0 h-full"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-          </div>
-        </form>
       </div>
-
-      {/* Mobile menu */}
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
     </header>
   );
 };
 
 export default Header;
+
+// Icons import
+import {
+  Home,
+  List,
+  Percent,
+  Heart,
+} from 'lucide-react';
+
+import {
+  DropdownMenuHeader,
+  DropdownMenuLabel,
+  DropdownMenuDescription,
+} from "@/components/ui/dropdown-menu"

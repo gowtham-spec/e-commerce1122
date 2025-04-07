@@ -8,6 +8,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useToast } from '@/components/ui/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 type Product = {
   id: string;
@@ -35,34 +36,68 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [imageError, setImageError] = React.useState(false);
   const [heartAnimation, setHeartAnimation] = React.useState(false);
   const [addedToCart, setAddedToCart] = React.useState(false);
+  const [flyingImage, setFlyingImage] = React.useState<{ active: boolean, x: number, y: number }>({ 
+    active: false, 
+    x: 0, 
+    y: 0 
+  });
 
   // Check for image loading errors
   const handleImageError = () => {
     setImageError(true);
   };
 
-  // Format price to INR
-  const formatPriceToINR = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price * 83); // Approximate conversion rate from USD to INR
-  };
+  const handleAddToCart = (e: React.MouseEvent) => {
+    // Get the button position
+    const buttonRect = (e.target as HTMLElement).getBoundingClientRect();
+    const buttonX = buttonRect.left + buttonRect.width / 2;
+    const buttonY = buttonRect.top + buttonRect.height / 2;
 
-  const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity: 1,
-      category: product.category,
-    });
-    
-    // Set animation state for cart
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 1000);
+    // Get the cart icon position (assuming it's in the header)
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+      const cartRect = cartIcon.getBoundingClientRect();
+      const cartX = cartRect.left + cartRect.width / 2;
+      const cartY = cartRect.top + cartRect.height / 2;
+
+      // Start the flying animation
+      setFlyingImage({
+        active: true,
+        x: cartX - buttonX,
+        y: cartY - buttonY
+      });
+
+      // After animation completes, add to cart and reset
+      setTimeout(() => {
+        setFlyingImage({ active: false, x: 0, y: 0 });
+        addItem({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.images[0],
+          quantity: 1,
+          category: product.category,
+        });
+        
+        // Set animation state for cart
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 1000);
+      }, 500);
+    } else {
+      // Fallback if cart icon not found
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        quantity: 1,
+        category: product.category,
+      });
+      
+      // Set animation state for cart
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 1000);
+    }
     
     // Add animation to the button
     const button = document.getElementById(`add-to-cart-${product.id}`);
@@ -99,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const fallbackImage = "/placeholder.svg";
-  const currentImage = imageError ? fallbackImage : product.images[0]; // Use only the first image, no more cycling through images
+  const currentImage = imageError ? fallbackImage : product.images[0];
 
   return (
     <div className="product-card rounded-lg overflow-hidden border shadow-sm transition-all duration-300 flex flex-col h-full relative">
@@ -141,6 +176,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             }`}
           />
         </Button>
+
+        {/* Flying product image animation */}
+        <AnimatePresence>
+          {flyingImage.active && (
+            <motion.div
+              initial={{ scale: 1, opacity: 1, x: 0, y: 0 }}
+              animate={{ 
+                scale: 0.5, 
+                opacity: 0.8, 
+                x: flyingImage.x, 
+                y: flyingImage.y,
+                rotate: 360
+              }}
+              exit={{ scale: 0.2, opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute z-50 top-0 left-0 w-16 h-16 rounded-full overflow-hidden border-2 border-purple-500"
+            >
+              <img 
+                src={currentImage} 
+                alt={product.name} 
+                className="w-full h-full object-cover" 
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="p-4 flex flex-col flex-grow">
