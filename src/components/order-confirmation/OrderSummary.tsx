@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { CartItem } from '@/contexts/CartContext';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 interface OrderSummaryProps {
   orderNumber: string;
   formattedDeliveryDate: string;
-  formatPriceToINR: (price: number) => string;
   items: CartItem[];
   totalPrice: number;
   itemVariants: any;
@@ -17,7 +17,6 @@ interface OrderSummaryProps {
 const OrderSummary: React.FC<OrderSummaryProps> = ({ 
   orderNumber, 
   formattedDeliveryDate, 
-  formatPriceToINR, 
   items, 
   totalPrice,
   itemVariants 
@@ -70,12 +69,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Shipping</span>
-                <span className="text-sm">{formatPriceToINR(totalPrice > 500/83 ? 0 : 100/83)}</span>
+                <span className="text-sm">{formatPriceToINR(totalPrice > 500 ? 0 : 100)}</span>
               </div>
               <div className="flex items-center justify-between font-medium">
                 <span>Total</span>
                 <span className="text-lg text-purple-600 dark:text-purple-400">
-                  {formatPriceToINR(totalPrice > 500/83 ? totalPrice : totalPrice + 100/83)}
+                  {formatPriceToINR(totalPrice > 500 ? totalPrice : totalPrice + 100)}
                 </span>
               </div>
             </div>

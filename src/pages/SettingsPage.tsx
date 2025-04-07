@@ -9,19 +9,23 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import SalesDashboard from '@/components/seller/SalesDashboard';
+import { useTheme } from '@/contexts/ThemeContext';
+import { SellerRegistrationForm } from '@/components/seller/SellerRegistrationForm';
 
 const SettingsPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [isLoading, setIsLoading] = useState(false);
+  const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
 
   const handleSaveProfile = () => {
     setIsLoading(true);
@@ -127,7 +131,14 @@ const SettingsPage = () => {
                   </div>
                   {user?.role !== 'seller' && (
                     <div className="mt-2">
-                      <Button variant="outline">Upgrade to Seller</Button>
+                      <Dialog open={sellerDialogOpen} onOpenChange={setSellerDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">Upgrade to Seller</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                          <SellerRegistrationForm onClose={() => setSellerDialogOpen(false)} />
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   )}
                 </div>
