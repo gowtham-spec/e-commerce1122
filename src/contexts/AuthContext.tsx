@@ -5,11 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
+export type UserRole = 'public' | 'seller';
+
 export type User = {
   id: string;
   email: string;
   name: string;
   avatar?: string;
+  role: UserRole;
 };
 
 type AuthContextType = {
@@ -17,7 +20,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   isLoading: boolean;
   socialLogin: (provider: string) => Promise<void>;
 };
@@ -39,7 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
       name: supabaseUser.user_metadata.name || supabaseUser.email?.split('@')[0] || '',
-      avatar: supabaseUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(supabaseUser.email?.split('@')[0] || '')}`
+      avatar: supabaseUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(supabaseUser.email?.split('@')[0] || '')}`,
+      role: supabaseUser.user_metadata.role || 'public'
     };
   };
 
@@ -85,6 +89,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (error) {
         // More user-friendly error message
+        if (error.message.includes('Email not confirmed')) {
+          throw new Error('Please verify your email before logging in. Check your inbox for a confirmation link.');
+        }
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Username or password is incorrect');
         }
@@ -130,7 +137,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, role: UserRole = 'public') => {
     setIsLoading(true);
     
     try {
@@ -142,7 +149,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             name,
             first_name: name.split(' ')[0],
             last_name: name.split(' ').slice(1).join(' '),
-            avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
+            avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`,
+            role: role
           }
         }
       });

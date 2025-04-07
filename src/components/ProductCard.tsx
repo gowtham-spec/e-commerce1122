@@ -7,6 +7,7 @@ import { Heart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useToast } from '@/components/ui/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Product = {
   id: string;
@@ -33,6 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { toast } = useToast();
   const [imageError, setImageError] = React.useState(false);
   const [heartAnimation, setHeartAnimation] = React.useState(false);
+  const [addedToCart, setAddedToCart] = React.useState(false);
 
   // Check for image loading errors
   const handleImageError = () => {
@@ -57,6 +59,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       quantity: 1,
       category: product.category,
     });
+    
+    // Set animation state for cart
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 1000);
     
     // Add animation to the button
     const button = document.getElementById(`add-to-cart-${product.id}`);
@@ -96,7 +102,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const currentImage = imageError ? fallbackImage : product.images[0]; // Use only the first image, no more cycling through images
 
   return (
-    <div className="product-card rounded-lg overflow-hidden border shadow-sm transition-all duration-300 flex flex-col h-full">
+    <div className="product-card rounded-lg overflow-hidden border shadow-sm transition-all duration-300 flex flex-col h-full relative">
       <div 
         className="product-image-container h-56 relative product-image-hover-effect"
       >
@@ -163,6 +169,45 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         >
           {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
         </Button>
+
+        {/* Cart animation overlay */}
+        <AnimatePresence>
+          {addedToCart && (
+            <motion.div 
+              className="absolute inset-0 bg-purple-500 bg-opacity-30 flex items-center justify-center backdrop-blur-sm z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 1.5, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                className="bg-white dark:bg-gray-800 rounded-full p-4 shadow-lg"
+              >
+                <motion.svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="text-green-500"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <path d="M20 6L9 17l-5-5"></path>
+                </motion.svg>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

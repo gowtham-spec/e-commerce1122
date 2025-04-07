@@ -13,6 +13,7 @@ import { Trash2, Minus, Plus, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ShoppingCart = () => {
   const { 
@@ -38,17 +39,8 @@ const ShoppingCart = () => {
   };
 
   const handleCheckout = () => {
-    if (isAuthenticated) {
-      setIsCartOpen(false);
-      navigate('/checkout');
-    } else {
-      setIsCartOpen(false);
-      toast({
-        title: "Login Required",
-        description: "Please login before proceeding to checkout",
-      });
-      navigate('/login', { state: { returnUrl: '/checkout' } });
-    }
+    setIsCartOpen(false);
+    navigate('/checkout');
   };
 
   const handleAddToCartAnimation = (itemId: string) => {
@@ -105,79 +97,86 @@ const ShoppingCart = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item) => (
-                <div 
-                  key={item.id}
-                  id={`cart-item-${item.id}`}
-                  className="flex border-b border-border pb-4 add-to-cart-animation"
-                >
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
+              <AnimatePresence>
+                {items.map((item) => (
+                  <motion.div 
+                    key={item.id}
+                    id={`cart-item-${item.id}`}
+                    className="flex border-b border-border pb-4"
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ type: "spring", damping: 15 }}
+                  >
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </div>
 
-                  <div className="ml-4 flex flex-1 flex-col">
-                    <div>
-                      <div className="flex justify-between text-base font-medium">
-                        <h3 className="line-clamp-2">
-                          <Link 
-                            to={`/product/${item.id}`}
-                            onClick={() => setIsCartOpen(false)}
+                    <div className="ml-4 flex flex-1 flex-col">
+                      <div>
+                        <div className="flex justify-between text-base font-medium">
+                          <h3 className="line-clamp-2">
+                            <Link 
+                              to={`/product/${item.id}`}
+                              onClick={() => setIsCartOpen(false)}
+                            >
+                              {item.name}
+                            </Link>
+                          </h3>
+                          <p className="ml-4">{formatPriceToINR(item.price)}</p>
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {item.category}
+                          {item.size && ` • Size: ${item.size}`}
+                          {item.color && ` • Color: ${item.color}`}
+                        </p>
+                      </div>
+                      <div className="flex flex-1 items-end justify-between text-sm mt-2">
+                        <div className="flex items-center border rounded-md">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-none rounded-l-md"
+                            onClick={() => {
+                              updateQuantity(item.id, item.quantity - 1);
+                              handleAddToCartAnimation(item.id);
+                            }}
+                            disabled={item.quantity <= 1}
                           >
-                            {item.name}
-                          </Link>
-                        </h3>
-                        <p className="ml-4">{formatPriceToINR(item.price)}</p>
-                      </div>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.category}
-                        {item.size && ` • Size: ${item.size}`}
-                        {item.color && ` • Color: ${item.color}`}
-                      </p>
-                    </div>
-                    <div className="flex flex-1 items-end justify-between text-sm mt-2">
-                      <div className="flex items-center border rounded-md">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-none rounded-l-md"
-                          onClick={() => {
-                            updateQuantity(item.id, item.quantity - 1);
-                            handleAddToCartAnimation(item.id);
-                          }}
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-none rounded-r-md"
-                          onClick={() => {
-                            updateQuantity(item.id, item.quantity + 1);
-                            handleAddToCartAnimation(item.id);
-                          }}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="w-8 text-center">{item.quantity}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-none rounded-r-md"
+                            onClick={() => {
+                              updateQuantity(item.id, item.quantity + 1);
+                              handleAddToCartAnimation(item.id);
+                            }}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-red-500 hover:text-red-700 h-8 w-8"
-                        onClick={() => removeItem(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500 hover:text-red-700 h-8 w-8"
+                          onClick={() => removeItem(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               <div className="flex justify-end">
                 <Button

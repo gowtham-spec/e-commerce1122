@@ -1,174 +1,177 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
-import { Facebook, Github, Mail, ArrowRight, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Github, Loader2 } from 'lucide-react';
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const { login, isAuthenticated, socialLogin } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { login, socialLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the redirect path from state or default to home
-  const from = location.state?.from || '/';
-  
-  // Redirect if already logged in
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from);
-    }
-  }, [isAuthenticated, navigate, from]);
-  
+  // Get return URL from location state or default to "/"
+  const from = location.state?.from || "/";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    setError(null);
+
+    // Validate form
+    if (!email.trim()) {
+      setError('Please enter your email');
       return;
     }
-    
+    if (!password.trim()) {
+      setError('Please enter your password');
+      return;
+    }
+
+    setLoading(true);
     try {
-      setError('');
-      setIsLoading(true);
       await login(email, password);
-      // No need to navigate here as the auth state listener will trigger the redirect
+      navigate(from, { replace: true });
     } catch (error: any) {
-      // Better error handling to avoid showing email confirmation message unnecessarily
-      console.error("Login error:", error.message);
-      setError(error.message || 'Username or password is incorrect');
+      setError(error.message || 'Failed to login');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
-  
-  const handleSocialLogin = (provider: string) => {
+
+  const handleSocialLogin = async (provider: string) => {
     try {
-      socialLogin(provider);
+      await socialLogin(provider);
     } catch (error: any) {
-      setError(`${provider} login failed: ${error.message}`);
+      setError(error.message);
     }
   };
 
   return (
-    <motion.div 
-      className="container mx-auto py-6 md:py-12 px-4 max-w-md"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800"
     >
-      <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2 purple-gradient-text">Sign In to ValueMarket</h1>
-        <p className="text-sm md:text-base text-muted-foreground">
-          Welcome back! Please login to continue shopping
-        </p>
+      <div className="w-full max-w-md">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="border-purple-200 dark:border-purple-800/40 shadow-lg">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+              <CardDescription className="text-center">
+                Enter your email and password to access your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mb-4"
+                >
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="bg-white dark:bg-gray-800"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <Link
+                        to="/forgot-password"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-white dark:bg-gray-800"
+                    />
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-purple-gradient hover:shadow-purple-lg"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing In...
+                      </>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </Button>
+                </div>
+              </form>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => handleSocialLogin('github')}
+                  className="bg-white dark:bg-gray-800"
+                >
+                  <Github className="mr-2 h-4 w-4" />
+                  GitHub
+                </Button>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-2">
+              <div className="text-center text-sm text-muted-foreground">
+                Don't have an account?{' '}
+                <Link to="/register" className="text-primary hover:underline">
+                  Sign up
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        </motion.div>
       </div>
-      
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-purple-100 dark:border-purple-900/30">
-        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-          <AnimatePresence>
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Alert variant="destructive" className="text-sm">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="border-purple-100 dark:border-purple-800/40 dark:bg-gray-700 dark:text-white focus-visible:ring-purple-500"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                Forgot Password?
-              </Link>
-            </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="border-purple-100 dark:border-purple-800/40 dark:bg-gray-700 dark:text-white focus-visible:ring-purple-500"
-            />
-          </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-purple-gradient hover:shadow-purple-lg group"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
-            <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </form>
-        
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="dark:bg-purple-800/40" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-white dark:bg-gray-800 px-2 text-muted-foreground text-sm">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 md:gap-3 mt-6">
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('facebook')}>
-              <Facebook className="h-4 w-4 mr-2" />
-              <span className="text-xs md:text-sm">Facebook</span>
-            </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('github')}>
-              <Github className="h-4 w-4 mr-2" />
-              <span className="text-xs md:text-sm">GitHub</span>
-            </Button>
-            <Button variant="outline" className="flex-1 border-purple-100 dark:border-purple-800/40 dark:text-gray-200" onClick={() => handleSocialLogin('google')}>
-              <Mail className="h-4 w-4 mr-2" />
-              <span className="text-xs md:text-sm">Google</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      <p className="text-center mt-6 md:mt-8 text-sm text-muted-foreground">
-        Don't have an account?{' '}
-        <Link to="/register" className="text-primary font-medium hover:underline">
-          Sign up
-        </Link>
-      </p>
     </motion.div>
   );
 };

@@ -1,109 +1,204 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Truck, ShoppingBag, Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Check, ChevronRight, Download, ShoppingBag } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { useCart } from '@/contexts/CartContext';
 
 const OrderConfirmationPage = () => {
-  // Generate random order number
-  const orderNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+  const { items, totalPrice, clearCart } = useCart();
+  const navigate = useNavigate();
+  const orderNumber = React.useMemo(() => 
+    Math.floor(100000 + Math.random() * 900000).toString(), 
+    []
+  );
+
+  // Estimated delivery date (5-7 days from now)
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
   
-  // Generate estimated delivery date (7-10 days from now)
-  const today = new Date();
-  const deliveryDateMin = new Date(today);
-  deliveryDateMin.setDate(today.getDate() + 7);
-  const deliveryDateMax = new Date(today);
-  deliveryDateMax.setDate(today.getDate() + 10);
+  const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  // Format price to Indian Rupees
+  const formatPriceToINR = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price * 83); // Approximate conversion rate from USD to INR
+  };
+
+  // Clear cart and go to home when "Continue Shopping" is clicked
+  const handleContinueShopping = () => {
+    clearCart();
+    navigate('/');
+  };
+
+  // Container animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
   
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
+  // Item animation
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100 }
+    }
   };
 
   return (
-    <div className="container max-w-3xl mx-auto py-12 px-4">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-6">
-          <CheckCircle className="h-12 w-12 text-green-600" />
-        </div>
-        <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
-        <p className="text-muted-foreground text-lg">
-          Thank you for your purchase. Your order has been received.
-        </p>
-      </div>
-      
-      <div className="bg-white p-8 rounded-lg shadow-sm mb-8">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Order #{orderNumber}</h2>
-            <p className="text-muted-foreground">
-              Placed on {formatDate(new Date())}
-            </p>
-          </div>
-          <Button variant="outline" asChild>
-            <Link to="/orders">View All Orders</Link>
+    <div className="container max-w-4xl mx-auto py-12 px-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center mb-6"
+      >
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 10 }}
+          className="rounded-full bg-green-100 dark:bg-green-900/30 p-4 w-24 h-24 mx-auto mb-6 flex items-center justify-center"
+        >
+          <Check className="h-12 w-12 text-green-600 dark:text-green-400" />
+        </motion.div>
+        <motion.h1 
+          initial={{ y: -20 }}
+          animate={{ y: 0 }}
+          className="text-3xl font-bold mb-2"
+        >
+          Order Confirmed!
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-muted-foreground"
+        >
+          Thanks for shopping with us. Your order has been received and is being processed.
+        </motion.p>
+      </motion.div>
+
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
+        <motion.div variants={itemVariants}>
+          <Card className="border-purple-200 dark:border-purple-800/40">
+            <CardHeader className="bg-purple-50 dark:bg-purple-900/20 border-b border-purple-100 dark:border-purple-800/30">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Order Summary</CardTitle>
+                <span className="text-sm text-muted-foreground">#{orderNumber}</span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Order Date</span>
+                  <span className="text-sm">{new Date().toLocaleDateString('en-IN')}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Expected Delivery</span>
+                  <span className="text-sm">{formattedDeliveryDate}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Payment Method</span>
+                  <span className="text-sm">Cash on Delivery</span>
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between py-2">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 rounded overflow-hidden bg-white border">
+                          <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                        </div>
+                      </div>
+                      <span className="text-sm">{formatPriceToINR(item.price * item.quantity)}</span>
+                    </div>
+                  ))}
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Subtotal</span>
+                    <span className="text-sm">{formatPriceToINR(totalPrice)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Shipping</span>
+                    <span className="text-sm">{formatPriceToINR(totalPrice > 500/83 ? 0 : 100/83)}</span>
+                  </div>
+                  <div className="flex items-center justify-between font-medium">
+                    <span>Total</span>
+                    <span className="text-lg text-purple-600 dark:text-purple-400">
+                      {formatPriceToINR(totalPrice > 500/83 ? totalPrice : totalPrice + 100/83)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card className="bg-purple-gradient text-white border-0">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold mb-1">Track your order</h3>
+                  <p className="text-sm text-white/80">
+                    Get updates about your order status
+                  </p>
+                </div>
+                <Button variant="secondary" size="sm" className="text-purple-600">
+                  Track Order <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="flex justify-center space-x-4">
+          <Button 
+            variant="outline"
+            className="border-purple-200 dark:border-purple-800/40"
+            onClick={() => window.print()}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download Invoice
           </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
-              <h3 className="font-medium">Order Details</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              You can track your order status and view details in your account.
-            </p>
-          </div>
-          
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Truck className="h-5 w-5 mr-2 text-primary" />
-              <h3 className="font-medium">Shipping Info</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Your items will be shipped via express delivery.
-            </p>
-          </div>
-          
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Calendar className="h-5 w-5 mr-2 text-primary" />
-              <h3 className="font-medium">Delivery Date</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Estimated between {formatDate(deliveryDateMin)} and {formatDate(deliveryDateMax)}
-            </p>
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          <h3 className="font-semibold">What's Next?</h3>
-          <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
-            <li>You will receive an order confirmation email shortly.</li>
-            <li>Once your order ships, you'll receive tracking information.</li>
-            <li>You can check your order status in your account dashboard.</li>
-          </ol>
-        </div>
-      </div>
-      
-      <div className="text-center space-y-4">
-        <h3 className="font-semibold">Need Help?</h3>
-        <p className="text-muted-foreground">
-          If you have any questions or concerns about your order, please contact our customer support.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild variant="outline">
-            <Link to="/contact">Contact Support</Link>
+          <Button 
+            onClick={handleContinueShopping}
+            className="bg-purple-gradient hover:shadow-purple-lg"
+          >
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Continue Shopping
           </Button>
-          <Button asChild>
-            <Link to="/">Continue Shopping</Link>
-          </Button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
