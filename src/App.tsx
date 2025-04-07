@@ -32,6 +32,7 @@ import ReturnsPage from "./pages/ReturnsPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ContactPage from "./pages/ContactPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -42,27 +43,88 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product/:productId" element={<ProductPage />} />
-        <Route path="/products" element={<CategoryPage />} />
-        <Route path="/category" element={<CategoryPage />} />
-        <Route path="/category/:categoryId" element={<CategoryPage />} />
-        <Route path="/category/:categoryId/:subcategoryId" element={<CategoryPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/wishlist" element={<WishlistPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        {/* Authentication Routes (available only when not logged in) */}
+        <Route path="/login" element={
+          <ProtectedRoute requireAuth={false}>
+            <LoginPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/register" element={
+          <ProtectedRoute requireAuth={false}>
+            <RegisterPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <ProtectedRoute requireAuth={false}>
+            <ForgotPasswordPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/reset-password" element={
+          <ProtectedRoute requireAuth={false}>
+            <ResetPasswordPage />
+          </ProtectedRoute>
+        } />
+
+        {/* Protected Routes (require authentication) */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/product/:productId" element={
+          <ProtectedRoute>
+            <ProductPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/products" element={
+          <ProtectedRoute>
+            <CategoryPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/category" element={
+          <ProtectedRoute>
+            <CategoryPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/category/:categoryId" element={
+          <ProtectedRoute>
+            <CategoryPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/category/:categoryId/:subcategoryId" element={
+          <ProtectedRoute>
+            <CategoryPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/search" element={
+          <ProtectedRoute>
+            <SearchPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/wishlist" element={
+          <ProtectedRoute>
+            <WishlistPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/deals" element={
+          <ProtectedRoute>
+            <DealsPage />
+          </ProtectedRoute>
+        } />
+
+        {/* Checkout routes (no authentication required) */}
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-        <Route path="/deals" element={<DealsPage />} />
+        
+        {/* Public information pages */}
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/shipping" element={<ShippingPage />} />
         <Route path="/returns" element={<ReturnsPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        
+        {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 @layer base {
   :root {
@@ -72,7 +70,7 @@
   }
 }
 
-@layer base {
+@layer components {
   * {
     @apply border-border;
   }
@@ -100,328 +98,390 @@
   .dark .checkout-card {
     @apply bg-gray-800 border-gray-700;
   }
-}
 
-/* Smooth animations */
-* {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 200ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-muted/50;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-purple-400/50 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-purple-500/70;
-}
-
-/* Product card hover effects */
-.product-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  @apply bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-950/50;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.2),
-              0 8px 10px -6px rgba(139, 92, 246, 0.1);
-}
-
-.dark .product-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3),
-              0 8px 10px -6px rgba(139, 92, 246, 0.2);
-}
-
-/* Heart animation */
-@keyframes heart-beat {
-  0% {
-    transform: scale(1);
+  /* Page transition animations */
+  .page-entrance {
+    animation: pageEnter 0.5s ease forwards;
   }
-  25% {
-    transform: scale(1.2);
+
+  .page-exit {
+    animation: pageExit 0.3s ease forwards;
   }
-  50% {
-    transform: scale(0.95);
+  
+  /* Heart animation */
+  .heart-beat-animation {
+    animation: heartBeat 0.8s ease-in-out;
   }
-  75% {
+
+  .heart-pulse {
+    animation: heartPulse 0.8s ease-in-out;
+  }
+  
+  /* Authentication form styles */
+  .auth-form {
+    @apply max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-purple-100 dark:border-purple-900/30 p-6;
+    animation: formAppear 0.5s ease-out;
+  }
+  
+  .auth-input {
+    @apply border-purple-100 dark:border-purple-800/40 dark:bg-gray-700 dark:text-white focus-visible:ring-purple-500;
+  }
+}
+
+@layer utilities {
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-purple-400/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-purple-500/70;
+  }
+
+  /* Product card hover effects */
+  .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    @apply bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-950/50;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.2),
+                0 8px 10px -6px rgba(139, 92, 246, 0.1);
+  }
+
+  .dark .product-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3),
+                0 8px 10px -6px rgba(139, 92, 246, 0.2);
+  }
+
+  /* Heart animation */
+  @keyframes heart-beat {
+    0% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(1.2);
+    }
+    50% {
+      transform: scale(0.95);
+    }
+    75% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .heart-animation {
+    animation: heart-beat 0.5s ease-in-out;
+  }
+
+  /* Font family utilities */
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Purple gradient effects */
+  .purple-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400;
+  }
+
+  .bg-purple-gradient {
+    @apply bg-gradient-to-r from-purple-700 via-purple-600 to-purple-500;
+  }
+
+  .purple-gradient-border {
+    border-width: 2px;
+    border-style: solid;
+    border-image: linear-gradient(to right, #9b87f5, #7E69AB) 1;
+  }
+
+  .glass-card {
+    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-purple-200/50 dark:border-purple-800/30 rounded-xl shadow-lg;
+  }
+
+  .purple-glow {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  }
+
+  .dark .purple-glow {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  }
+
+  /* Enhanced dark mode styles */
+  .dark body {
+    @apply bg-gradient-to-b from-gray-900 to-purple-950/40;
+    background-attachment: fixed;
+  }
+
+  /* Dark mode header */
+  .dark header {
+    @apply bg-gray-900 text-white border-gray-800;
+  }
+
+  .hover-shadow-purple-lg {
+    @apply hover:shadow-lg hover:shadow-purple-500/20;
+  }
+
+  .shadow-purple-lg {
+    @apply shadow-lg shadow-purple-500/20;
+  }
+
+  /* Floating animation for featured items */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Pulse animation for deals */
+  @keyframes pulse-purple {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+    }
+  }
+
+  .animate-pulse-purple {
+    animation: pulse-purple 2s infinite;
+  }
+
+  /* Added animations for cart and checkout */
+  @keyframes add-to-cart {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .add-to-cart-animation {
+    animation: add-to-cart 0.5s ease-out forwards;
+  }
+
+  @keyframes page-entrance {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-entrance {
+    animation: page-entrance 0.7s ease-out forwards;
+  }
+
+  /* Image hover animation */
+  .product-image-container {
+    overflow: hidden;
+    @apply rounded-t-lg;
+  }
+
+  .product-image-container img {
+    transition: transform 0.5s ease;
+  }
+
+  .product-image-container:hover img {
     transform: scale(1.1);
   }
-  100% {
-    transform: scale(1);
+
+  .product-image-hover-effect {
+    position: relative;
   }
-}
 
-.heart-animation {
-  animation: heart-beat 0.5s ease-in-out;
-}
-
-/* Font family utilities */
-.font-poppins {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Purple gradient effects */
-.purple-gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-400;
-}
-
-.bg-purple-gradient {
-  @apply bg-gradient-to-r from-purple-700 via-purple-600 to-purple-500;
-}
-
-.purple-gradient-border {
-  border-width: 2px;
-  border-style: solid;
-  border-image: linear-gradient(to right, #9b87f5, #7E69AB) 1;
-}
-
-.glass-card {
-  @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-purple-200/50 dark:border-purple-800/30 rounded-xl shadow-lg;
-}
-
-.purple-glow {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
-}
-
-.dark .purple-glow {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-}
-
-/* Enhanced dark mode styles */
-.dark body {
-  @apply bg-gradient-to-b from-gray-900 to-purple-950/40;
-  background-attachment: fixed;
-}
-
-/* Dark mode header */
-.dark header {
-  @apply bg-gray-900 text-white border-gray-800;
-}
-
-.hover-shadow-purple-lg {
-  @apply hover:shadow-lg hover:shadow-purple-500/20;
-}
-
-.shadow-purple-lg {
-  @apply shadow-lg shadow-purple-500/20;
-}
-
-/* Floating animation for featured items */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* Pulse animation for deals */
-@keyframes pulse-purple {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
-  }
-}
-
-.animate-pulse-purple {
-  animation: pulse-purple 2s infinite;
-}
-
-/* Added animations for cart and checkout */
-@keyframes add-to-cart {
-  0% {
-    transform: scale(0.5);
+  .product-image-hover-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(139, 92, 246, 0) 0%, rgba(139, 92, 246, 0.2) 100%);
     opacity: 0;
+    transition: opacity 0.3s ease;
   }
-  70% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
+
+  .product-image-hover-effect:hover::after {
     opacity: 1;
   }
-}
 
-.add-to-cart-animation {
-  animation: add-to-cart 0.5s ease-out forwards;
-}
-
-@keyframes page-entrance {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
+  /* Additional Animation Styles */
+  .heart-beat-animation {
+    animation: heartBeat 0.8s ease-in-out;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+
+  .heart-pulse {
+    animation: heartPulse 0.8s ease-in-out;
   }
-}
 
-.page-entrance {
-  animation: page-entrance 0.7s ease-out forwards;
-}
-
-/* Image hover animation */
-.product-image-container {
-  overflow: hidden;
-  @apply rounded-t-lg;
-}
-
-.product-image-container img {
-  transition: transform 0.5s ease;
-}
-
-.product-image-container:hover img {
-  transform: scale(1.1);
-}
-
-.product-image-hover-effect {
-  position: relative;
-}
-
-.product-image-hover-effect::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom, rgba(139, 92, 246, 0) 0%, rgba(139, 92, 246, 0.2) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.product-image-hover-effect:hover::after {
-  opacity: 1;
-}
-
-/* Additional Animation Styles */
-.heart-beat-animation {
-  animation: heartBeat 0.8s ease-in-out;
-}
-
-.heart-pulse {
-  animation: heartPulse 0.8s ease-in-out;
-}
-
-@keyframes heartBeat {
-  0% {
-    transform: scale(1);
+  @keyframes heartBeat {
+    0% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.3);
+    }
+    28% {
+      transform: scale(1);
+    }
+    42% {
+      transform: scale(1.3);
+    }
+    70% {
+      transform: scale(1);
+    }
   }
-  14% {
-    transform: scale(1.3);
+
+  @keyframes heartPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.4);
+      color: #ef4444;
+    }
+    100% {
+      transform: scale(1);
+    }
   }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.3);
-  }
-  70% {
-    transform: scale(1);
-  }
-}
 
-@keyframes heartPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.4);
-    color: #ef4444;
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Page Transition Animations */
-.page-transition-enter {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-transition-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.page-transition-exit {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.page-transition-exit-active {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 300ms, transform 300ms;
-}
-
-/* Dark mode input text color fix */
-.dark input, .dark textarea, .dark select {
-  color: white;
-}
-
-/* Enhanced hover effect for product cards */
-.product-image-hover-effect img {
-  transition: transform 0.5s ease;
-}
-
-.product-card:hover .product-image-hover-effect img {
-  transform: scale(1.05);
-}
-
-.add-to-cart-animation {
-  animation: addToCartPulse 0.5s ease-in-out;
-}
-
-@keyframes addToCartPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* General animations */
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
+  /* Page Transition Animations */
+  .page-transition-enter {
     opacity: 0;
     transform: translateY(10px);
   }
-  to {
+
+  .page-transition-enter-active {
     opacity: 1;
     transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  /* Dark mode input text color fix */
+  .dark input, .dark textarea, .dark select {
+    color: white;
+  }
+
+  /* Enhanced hover effect for product cards */
+  .product-image-hover-effect img {
+    transition: transform 0.5s ease;
+  }
+
+  .product-card:hover .product-image-hover-effect img {
+    transform: scale(1.05);
+  }
+
+  .add-to-cart-animation {
+    animation: addToCartPulse 0.5s ease-in-out;
+  }
+
+  @keyframes addToCartPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* General animations */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pageExit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes formAppear {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

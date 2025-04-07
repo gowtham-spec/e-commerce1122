@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [animationReady, setAnimationReady] = useState(false);
@@ -36,17 +35,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     // Trigger animation after component mounts
     setAnimationReady(true);
-    
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      toast({
-        title: "Login Required",
-        description: "Please login to continue with checkout",
-        variant: "destructive"
-      });
-      navigate('/login', { state: { returnUrl: '/checkout' } });
-    }
-  }, [isAuthenticated, navigate, toast]);
+  }, []);
 
   const [contactInfo, setContactInfo] = useState({
     firstName: user?.name?.split(' ')[0] || '',

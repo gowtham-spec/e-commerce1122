@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Set up auth state listener
   useEffect(() => {
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -63,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // Check for existing session
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(transformUser(session?.user ?? null));
@@ -87,8 +88,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Username or password is incorrect');
         }
-        // Remove this condition to avoid showing email confirmation message when it's not needed
-        // The Supabase auth will handle this automatically
         throw error;
       }
       
@@ -96,6 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!data.session) {
         throw new Error('No session returned from login');
       }
+      
+      // Navigate is handled by the auth state change listener
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -118,6 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       if (error) throw error;
+      // Navigate is handled by the auth state change listener
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -152,8 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: "Your account has been created successfully.",
       });
       
-      // Navigate to home page on successful registration
-      navigate('/');
+      // Navigate is handled by the auth state change listener
     } catch (error: any) {
       toast({
         title: "Registration Failed",
@@ -173,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Logged Out",
         description: "You have been successfully logged out.",
       });
+      // After logout, the auth state listener will update the state
     } catch (error: any) {
       toast({
         title: "Logout Failed",
