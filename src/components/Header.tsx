@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetFooter,
 } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -31,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -163,14 +165,12 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuHeader className="font-normal">
-                  <div className="flex flex-col space-y-1.5 p-2">
-                    <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
-                    <DropdownMenuDescription>
-                      {user?.email}
-                    </DropdownMenuDescription>
-                  </div>
-                </DropdownMenuHeader>
+                <div className="flex flex-col space-y-1.5 p-2">
+                  <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+                  <p className="text-sm text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   Profile
@@ -257,13 +257,13 @@ const Header = () => {
                   Help & Support
                 </Button>
               </div>
-              <SheetFooter>
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-auto">
                 {!isAuthenticated && (
                   <Link to="/login">
                     <Button className="w-full">Sign In</Button>
                   </Link>
                 )}
-              </SheetFooter>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -281,9 +281,3 @@ import {
   Percent,
   Heart,
 } from 'lucide-react';
-
-import {
-  DropdownMenuHeader,
-  DropdownMenuLabel,
-  DropdownMenuDescription,
-} from "@/components/ui/dropdown-menu"
