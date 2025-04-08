@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 // Ensure every product has at least 3 images
 const ensureMultipleImages = (product: Product) => {
@@ -50,10 +50,39 @@ const ProductPage: React.FC = () => {
 
   useEffect(() => {
     if (productId) {
-      const foundProduct = getProductById(productId);
+      // Look for the product in productsData directly first
+      let foundProduct = getProductById(productId);
       
-      if (foundProduct) {
-        // Ensure the product has multiple images
+      // If not found, check if it's a deal item (using ID from dealsData)
+      if (!foundProduct) {
+        import('@/data/dealsData').then(({ default: dealsData }) => {
+          const dealItem = dealsData.find(deal => deal.id === productId);
+          if (dealItem) {
+            // Create a product-like object from the deal item
+            foundProduct = {
+              id: dealItem.id,
+              name: dealItem.name,
+              description: dealItem.description,
+              price: dealItem.discountedPrice,
+              images: [dealItem.image, dealItem.image, dealItem.image], // Use same image 3 times
+              category: dealItem.category,
+              brand: dealItem.brand,
+              rating: 4.5, // Default rating
+              reviewCount: 10, // Default review count
+              stock: 10, // Default stock
+              featured: true
+            };
+            
+            setProduct(foundProduct);
+            setSelectedImage(foundProduct.images[0]);
+            
+            // Get related products that match category
+            const related = getRelatedProducts(foundProduct, 4);
+            setRelatedProducts(related);
+          }
+        });
+      } else {
+        // Handle regular product
         const enhancedProduct = ensureMultipleImages(foundProduct);
         setProduct(enhancedProduct);
         setSelectedImage(enhancedProduct.images[0]);
@@ -105,15 +134,6 @@ const ProductPage: React.FC = () => {
         category: product.category
       });
     }
-  };
-
-  // Format price to Indian Rupees
-  const formatPriceToINR = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price * 83); // Approximate conversion rate from USD to INR
   };
 
   if (!product) {

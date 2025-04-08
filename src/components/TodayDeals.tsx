@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { ShoppingCart, Timer, Sparkles, Hourglass } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import dealsData, { DealItem } from '@/data/dealsData';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 const TodayDeals = () => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -65,14 +67,6 @@ const TodayDeals = () => {
       quantity: 1,
       category: deal.category
     });
-  };
-
-  const formatPriceToINR = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price * 83);
   };
 
   const container = {

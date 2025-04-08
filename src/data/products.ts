@@ -2,6 +2,7 @@
 import productsData from './productsData';
 import categoriesData from './categoriesData';
 import subcategoriesData from './subcategoriesData';
+import additionalProducts from './additionalProducts';
 
 export interface Product {
   id: string;
@@ -37,7 +38,9 @@ export interface Subcategory {
   name: string;
 }
 
-export const products = productsData;
+// Combine the regular products with additional products
+const allProducts = [...productsData, ...additionalProducts];
+export const products = allProducts;
 export const categories = categoriesData;
 export const subcategories = subcategoriesData;
 

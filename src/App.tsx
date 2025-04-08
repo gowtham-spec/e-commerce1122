@@ -34,6 +34,9 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ContactPage from "./pages/ContactPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AddProductForm from "./components/seller/AddProductForm";
+import ProductsList from "./components/seller/ProductsList";
+import SalesDashboard from "./components/seller/SalesDashboard";
 
 const queryClient = new QueryClient();
 
@@ -73,9 +76,7 @@ const AnimatedRoutes = () => {
           </ProtectedRoute>
         } />
         <Route path="/product/:productId" element={
-          <ProtectedRoute>
-            <ProductPage />
-          </ProtectedRoute>
+          <ProductPage />
         } />
         <Route path="/products" element={
           <ProtectedRoute>
@@ -115,6 +116,22 @@ const AnimatedRoutes = () => {
         <Route path="/settings" element={
           <ProtectedRoute>
             <SettingsPage />
+          </ProtectedRoute>
+        } />
+        {/* Seller routes */}
+        <Route path="/seller/add-product" element={
+          <ProtectedRoute>
+            <AddProductForm />
+          </ProtectedRoute>
+        } />
+        <Route path="/seller/products" element={
+          <ProtectedRoute>
+            <ProductsList />
+          </ProtectedRoute>
+        } />
+        <Route path="/seller/dashboard" element={
+          <ProtectedRoute>
+            <SalesDashboard />
           </ProtectedRoute>
         } />
 
