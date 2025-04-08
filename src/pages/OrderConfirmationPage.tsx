@@ -7,7 +7,6 @@ import OrderHeader from '@/components/order-confirmation/OrderHeader';
 import OrderSummary from '@/components/order-confirmation/OrderSummary';
 import TrackOrderCard from '@/components/order-confirmation/TrackOrderCard';
 import OrderActions from '@/components/order-confirmation/OrderActions';
-import { formatPriceToINR } from '@/utils/priceFormatter';
 
 const OrderConfirmationPage = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -70,7 +69,6 @@ const OrderConfirmationPage = () => {
         <OrderSummary 
           orderNumber={orderNumber} 
           formattedDeliveryDate={formattedDeliveryDate}
-          formatPriceToINR={formatPriceToINR}
           items={items}
           totalPrice={totalPrice}
           itemVariants={itemVariants}
