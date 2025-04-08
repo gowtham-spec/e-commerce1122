@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
-import { Store, CreditCard, Bell, User, ShoppingBag, LogOut, ArrowRight, Save } from 'lucide-react';
+import { Store, CreditCard, Bell, User, ShoppingBag, LogOut, ArrowRight, Save, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import SellerRegistrationForm from '@/components/seller/SellerRegistrationForm';
 import SellerDashboard from '@/components/seller/SellerDashboard';
@@ -42,7 +41,6 @@ const SettingsPage = () => {
     newsletter: false,
   });
 
-  // Update profile data when user changes
   useEffect(() => {
     if (user) {
       setProfileData(prev => ({
@@ -53,7 +51,6 @@ const SettingsPage = () => {
     }
   }, [user]);
 
-  // Handle tab change via URL params
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && ['account', 'profile', 'billing', 'notifications', 'seller'].includes(tab)) {
@@ -155,6 +152,23 @@ const SettingsPage = () => {
                   <Store className="mr-2 h-4 w-4" />
                   {isSeller ? "Seller Dashboard" : "Become a Seller"}
                 </Button>
+                
+                {isSeller && (
+                  <Button
+                    variant={activeTab === 'add-product' ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => {
+                      handleTabChange('seller');
+                      const sellerDashboardTabs = document.querySelector('[data-state="active"] [value="add-product"]');
+                      if (sellerDashboardTabs) {
+                        (sellerDashboardTabs as HTMLElement).click();
+                      }
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
+                )}
                 
                 <Separator className="my-2" />
                 
@@ -425,7 +439,7 @@ const SettingsPage = () => {
 
             <TabsContent value="seller" className="mt-0">
               {isSeller ? (
-                <SellerDashboard />
+                <SellerDashboard isEmbedded={true} />
               ) : (
                 <Card>
                   <CardHeader>
