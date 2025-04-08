@@ -24,7 +24,7 @@ const SettingsPage = () => {
   
   const [activeTab, setActiveTab] = useState('account');
   const [profileData, setProfileData] = useState({
-    fullName: user?.displayName || '',
+    fullName: user?.name || '',
     email: user?.email || '',
     phoneNumber: '',
     address: '',
@@ -41,6 +41,17 @@ const SettingsPage = () => {
     orderUpdates: true,
     newsletter: false,
   });
+
+  // Update profile data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileData(prev => ({
+        ...prev,
+        fullName: user.name || '',
+        email: user.email || ''
+      }));
+    }
+  }, [user]);
 
   // Handle tab change via URL params
   useEffect(() => {
@@ -88,12 +99,12 @@ const SettingsPage = () => {
             <CardContent className="p-4">
               <div className="flex flex-col items-center mb-6">
                 <Avatar className="w-20 h-20 mb-2">
-                  <AvatarImage src={user?.photoURL || ''} alt={user?.displayName || 'User'} />
+                  <AvatarImage src={user?.avatar || ''} alt={user?.name || 'User'} />
                   <AvatarFallback>
-                    {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                    {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <h3 className="font-semibold">{user?.displayName || 'User'}</h3>
+                <h3 className="font-semibold">{user?.name || 'User'}</h3>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
                 {isSeller && (
                   <Badge variant="outline" className="mt-2">Seller Account</Badge>

@@ -1,239 +1,193 @@
 
-import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/contexts/AuthContext';
+import { Store, ArrowRight } from 'lucide-react';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { 
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
-
-const formSchema = z.object({
-  companyName: z.string().min(2, {
-    message: "Company name must be at least 2 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  address: z.string().min(5, {
-    message: "Address must be at least 5 characters.",
-  }),
-  phoneNumber: z.string().min(10, {
-    message: "Please enter a valid phone number.",
-  }),
-  businessCategory: z.string({
-    required_error: "Please select a business category.",
-  }),
-  productsOffered: z.string().min(5, {
-    message: "Please describe the products you offer.",
-  }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-export function SellerRegistrationForm({ onClose }: { onClose: () => void }) {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      companyName: "",
-      description: "",
-      address: "",
-      phoneNumber: "",
-      businessCategory: "",
-      productsOffered: "",
-    },
+const SellerRegistrationForm = () => {
+  const { becomeSeller, isLoading } = useAuth();
+  const [formData, setFormData] = useState({
+    businessName: '',
+    phoneNumber: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    taxId: '',
+    businessDescription: '',
+    agreeTerms: false
   });
 
-  const onSubmit = async (values: FormValues) => {
-    try {
-      // Here you would normally send this data to your backend
-      console.log("Submitting seller registration:", values);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Update the user role to seller
-      // This is just a mock implementation - in a real app, you'd update this on the backend
-      // and then refresh the user session
-      
-      toast({
-        title: "Registration successful!",
-        description: "Your seller account has been created.",
-      });
-      
-      onClose();
-      
-      // Force page reload to reflect updated role
-      window.location.reload();
-    } catch (error) {
-      console.error("Error registering as seller:", error);
-      toast({
-        title: "Registration failed",
-        description: "There was an error creating your seller account.",
-        variant: "destructive",
-      });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, agreeTerms: checked }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.agreeTerms) {
+      await becomeSeller();
     }
   };
 
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>Register as a Seller</DialogTitle>
-        <DialogDescription>
-          Fill out this form to create your seller account and start selling on our platform.
-        </DialogDescription>
-      </DialogHeader>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-          <FormField
-            control={form.control}
-            name="companyName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company/Shop Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your business name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="businessName">Business Name</Label>
+              <Input
+                id="businessName"
+                name="businessName"
+                value={formData.businessName}
+                onChange={handleChange}
+                placeholder="Your business name"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Business Address</Label>
+            <Input
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Street address"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                placeholder="City"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="state">State</Label>
+              <Input
+                id="state"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                placeholder="State"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="zipCode">ZIP Code</Label>
+              <Input
+                id="zipCode"
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleChange}
+                placeholder="ZIP Code"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="taxId">Tax ID / GST Number</Label>
+            <Input
+              id="taxId"
+              name="taxId"
+              value={formData.taxId}
+              onChange={handleChange}
+              placeholder="Your tax ID or GST number"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessDescription">Business Description</Label>
+            <Textarea
+              id="businessDescription"
+              name="businessDescription"
+              value={formData.businessDescription}
+              onChange={handleChange}
+              placeholder="Tell us about your business and products"
+              rows={4}
+              required
+            />
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="terms" 
+              checked={formData.agreeTerms}
+              onCheckedChange={handleCheckboxChange}
+              required
+            />
+            <Label htmlFor="terms" className="text-sm">
+              I agree to the Terms of Service, Privacy Policy, and Seller Agreement
+            </Label>
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full bg-purple-gradient hover:shadow-purple-lg"
+            disabled={isLoading || !formData.agreeTerms}
+          >
+            {isLoading ? (
+              "Processing..."
+            ) : (
+              <>
+                <Store className="mr-2 h-4 w-4" />
+                Become a Seller
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
             )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Description</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Tell us about your business..."
-                    className="min-h-[100px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Address</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Your business address"
-                    className="min-h-[80px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Phone Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="Phone number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="businessCategory"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="electronics">Electronics</SelectItem>
-                    <SelectItem value="clothing">Clothing & Fashion</SelectItem>
-                    <SelectItem value="home">Home & Furniture</SelectItem>
-                    <SelectItem value="beauty">Beauty & Personal Care</SelectItem>
-                    <SelectItem value="food">Food & Grocery</SelectItem>
-                    <SelectItem value="books">Books & Stationery</SelectItem>
-                    <SelectItem value="sports">Sports & Outdoors</SelectItem>
-                    <SelectItem value="toys">Toys & Games</SelectItem>
-                    <SelectItem value="health">Health & Wellness</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="productsOffered"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Products Offered</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Describe the products you will sell..."
-                    className="min-h-[100px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" className="bg-purple-gradient hover:shadow-purple-lg">
-              {form.formState.isSubmitting ? "Registering..." : "Register as Seller"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </>
+          </Button>
+        </div>
+      </form>
+
+      <div className="bg-muted p-4 rounded-md space-y-2 text-sm">
+        <h3 className="font-medium">Benefits of being a Value Market seller:</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Reach millions of customers</li>
+          <li>Easy-to-use seller dashboard</li>
+          <li>Fast payments processing</li>
+          <li>Comprehensive sales analytics</li>
+          <li>Dedicated seller support</li>
+        </ul>
+      </div>
+    </div>
   );
-}
+};
+
+export default SellerRegistrationForm;

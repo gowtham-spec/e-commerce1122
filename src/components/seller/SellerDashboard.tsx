@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, List, BarChart } from 'lucide-react';
+import { Plus, List, BarChart, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import AddProductForm from './AddProductForm';
@@ -24,13 +24,22 @@ const SellerDashboard = () => {
           </p>
         </div>
         
-        <Button 
-          className="bg-purple-gradient hover:shadow-purple-lg"
-          onClick={() => navigate('/seller/add-product')}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Product
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            className="bg-purple-gradient hover:shadow-purple-lg"
+            onClick={() => setActiveTab('add-product')}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Product
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setActiveTab('products')}
+          >
+            <Package className="mr-2 h-4 w-4" />
+            Manage Products
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">

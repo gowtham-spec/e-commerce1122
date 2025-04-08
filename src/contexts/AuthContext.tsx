@@ -23,6 +23,8 @@ type AuthContextType = {
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   isLoading: boolean;
   socialLogin: (provider: string) => Promise<void>;
+  isSeller: boolean;
+  becomeSeller: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,6 +47,50 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       avatar: supabaseUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(supabaseUser.email?.split('@')[0] || '')}`,
       role: supabaseUser.user_metadata.role || 'public'
     };
+  };
+
+  // Check if user is a seller
+  const isSeller = user?.role === 'seller';
+
+  // Function to upgrade user to seller
+  const becomeSeller = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication Error",
+        description: "You must be logged in to become a seller",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          role: 'seller'
+        }
+      });
+
+      if (error) throw error;
+
+      // Update the local user state
+      setUser(prev => prev ? { ...prev, role: 'seller' } : null);
+
+      toast({
+        title: "Congratulations!",
+        description: "Your account has been upgraded to seller status",
+      });
+
+      navigate('/settings?tab=seller');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upgrade to seller account",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Set up auth state listener
@@ -201,7 +247,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         register,
         isLoading,
-        socialLogin
+        socialLogin,
+        isSeller,
+        becomeSeller
       }}
     >
       {children}
