@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Lock, CreditCard, Truck, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -128,8 +130,8 @@ const CheckoutPage = () => {
 
   // Calculate totals
   const subtotal = totalPrice;
-  const shipping = subtotal > 50 ? 0 : 9.99;
-  const tax = subtotal * 0.07;
+  const shipping = subtotal > 4000 ? 0 : 800; // Converting $50 to ₹4000 approximately
+  const tax = subtotal * 0.18; // Using 18% GST instead of 7%
   const finalTotal = subtotal + shipping + tax;
 
   if (items.length === 0) {
@@ -369,20 +371,20 @@ const CheckoutPage = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span>Subtotal ({items.length} items)</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{formatPriceToINR(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                    <span>{shipping === 0 ? 'Free' : formatPriceToINR(shipping)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>{formatPriceToINR(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold">
                     <span>Total</span>
-                    <span>${finalTotal.toFixed(2)}</span>
+                    <span>{formatPriceToINR(finalTotal)}</span>
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -430,7 +432,7 @@ const CheckoutPage = () => {
                           <h3 className="line-clamp-2 text-left">
                             {item.name}
                           </h3>
-                          <p className="ml-4">${item.price.toFixed(2)}</p>
+                          <p className="ml-4">{formatPriceToINR(item.price)}</p>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">Qty {item.quantity}</p>
                       </div>
@@ -444,15 +446,15 @@ const CheckoutPage = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{formatPriceToINR(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                    <span>{shipping === 0 ? 'Free' : formatPriceToINR(shipping)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>{formatPriceToINR(tax)}</span>
                   </div>
                 </div>
 
@@ -460,7 +462,7 @@ const CheckoutPage = () => {
 
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>{formatPriceToINR(finalTotal)}</span>
                 </div>
               </CardContent>
               <CardFooter>
@@ -490,7 +492,7 @@ const CheckoutPage = () => {
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Truck className="h-4 w-4 mr-2" />
-                <span>Free shipping on orders over $50</span>
+                <span>Free shipping on orders over ₹4,000</span>
               </div>
             </div>
           </div>

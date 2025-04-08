@@ -7,6 +7,7 @@ import useCountdownTimer from '@/hooks/useCountdownTimer';
 import DealsHeader from '@/components/deals/DealsHeader';
 import CategoryFilters from '@/components/deals/CategoryFilters';
 import DealsGrid from '@/components/deals/DealsGrid';
+import { formatPriceToINR } from '@/utils/priceFormatter';
 
 const DealsPage = () => {
   const [filterCategory, setFilterCategory] = useState<string | null>(null);

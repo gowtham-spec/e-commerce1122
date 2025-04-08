@@ -15,6 +15,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import SalesDashboard from '@/components/seller/SalesDashboard';
 import { useTheme } from '@/contexts/ThemeContext';
 import { SellerRegistrationForm } from '@/components/seller/SellerRegistrationForm';
+import AddProductForm from '@/components/seller/AddProductForm';
+import ProductsList from '@/components/seller/ProductsList';
+import { PlusCircle, Package, BarChart } from 'lucide-react';
 
 const SettingsPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -26,6 +29,7 @@ const SettingsPage = () => {
   const [pushNotifications, setPushNotifications] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
+  const [productTab, setProductTab] = useState<'list' | 'add'>('list');
 
   const handleSaveProfile = () => {
     setIsLoading(true);
@@ -90,10 +94,11 @@ const SettingsPage = () => {
       </motion.div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid grid-cols-3 sm:grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-3 sm:grid-cols-5 mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
+          {isSeller && <TabsTrigger value="products">Products</TabsTrigger>}
           {isSeller && <TabsTrigger value="sales">Sales</TabsTrigger>}
         </TabsList>
         
@@ -245,9 +250,54 @@ const SettingsPage = () => {
         </TabsContent>
         
         {isSeller && (
+          <TabsContent value="products">
+            <motion.div variants={itemVariants}>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">My Products</h2>
+                <div className="flex gap-2">
+                  <Button
+                    variant={productTab === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setProductTab('list')}
+                    className={productTab === 'list' ? "bg-purple-gradient" : ""}
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    View Products
+                  </Button>
+                  <Button
+                    variant={productTab === 'add' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setProductTab('add')}
+                    className={productTab === 'add' ? "bg-purple-gradient" : ""}
+                  >
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Add Product
+                  </Button>
+                </div>
+              </div>
+
+              {productTab === 'list' ? (
+                <ProductsList />
+              ) : (
+                <AddProductForm />
+              )}
+            </motion.div>
+          </TabsContent>
+        )}
+        
+        {isSeller && (
           <TabsContent value="sales">
             <motion.div variants={itemVariants}>
               <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart className="h-5 w-5 mr-2" />
+                    Sales Overview
+                  </CardTitle>
+                  <CardDescription>
+                    Monitor your sales performance and analytics
+                  </CardDescription>
+                </CardHeader>
                 <CardContent className="pt-6">
                   <SalesDashboard />
                 </CardContent>
