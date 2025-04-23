@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,24 +14,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, ImagePlus } from 'lucide-react';
 
-const categories = [
-  'Electronics', 
-  'Clothing', 
-  'Home', 
-  'Beauty',
-  'Books', 
-  'Sports', 
-  'Toys', 
-  'Grocery',
-  'Furniture', 
-  'Stationery', 
-  'Accessories',
-  'Smartphones',
-  'Audio',
-  'Laptops',
-  'Fragrances',
-  'Peripherals'
-];
+const categories = Array.from(new Set(products.map(p => p.category)));
 
 const AddProductForm = () => {
   const { toast } = useToast();
@@ -65,11 +47,11 @@ const AddProductForm = () => {
     setProductData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Validate
+    // Validate form
     if (!productData.name || !productData.price || !productData.category) {
       toast({
         title: "Missing Information",
@@ -79,28 +61,31 @@ const AddProductForm = () => {
       setIsLoading(false);
       return;
     }
-    
-    // Convert price and stock to numbers
-    const price = parseFloat(productData.price);
-    const stock = parseInt(productData.stock || '0');
-    
-    if (isNaN(price) || price <= 0) {
-      toast({
-        title: "Invalid Price",
-        description: "Please enter a valid price.",
-        variant: "destructive"
-      });
-      setIsLoading(false);
-      return;
-    }
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Add new product to the list
+      const newProduct = {
+        id: `p${Date.now()}`,
+        name: productData.name,
+        description: productData.description,
+        price: parseFloat(productData.price),
+        category: productData.category,
+        subcategory: productData.subcategory,
+        stock: parseInt(productData.stock) || 0,
+        images: productData.images.map(file => URL.createObjectURL(file)),
+        brand: "NewBrand", // You might want to add this to the form
+        rating: 0,
+        reviewCount: 0,
+        featured: false,
+      };
+
+      // Here you would typically make an API call to save the product
+      // For now, we'll just show a success message
       toast({
-        title: "Product Added!",
-        description: "Your product has been successfully added.",
+        title: "Product Added Successfully",
+        description: "Your product has been added to the catalog.",
       });
-      setIsLoading(false);
+
       // Reset form
       setProductData({
         name: '',
@@ -113,7 +98,15 @@ const AddProductForm = () => {
         colors: '',
         images: []
       });
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add product. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const removeImage = (index: number) => {

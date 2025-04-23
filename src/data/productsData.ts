@@ -2,8 +2,8 @@ const productsData = [
   {
     id: "p1",
     name: "Premium Cotton T-Shirt",
-    description: "Soft and comfortable cotton t-shirt with a modern fit. Perfect for everyday wear.",
-    price: 24.99,
+    description: "Soft and comfortable cotton t-shirt with a modern fit.",
+    price: 599,
     images: [
       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1622445275576-721325763afe?w=800&auto=format&fit=crop",
@@ -27,8 +27,8 @@ const productsData = [
   {
     id: "p2",
     name: "Wireless Bluetooth Headphones",
-    description: "Premium noise-cancelling headphones with 30 hours of battery life and superior sound quality.",
-    price: 199.99,
+    description: "Premium noise-cancelling headphones with 30 hours of battery life.",
+    price: 2999,
     images: [
       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?w=800&auto=format&fit=crop",
@@ -607,7 +607,97 @@ const productsData = [
       length: "Full length",
       feature: "Four-way stretch, Hidden pocket"
     }
+  },
+  {
+    id: "new_e1",
+    name: "Smart LED Strip Lights",
+    description: "WiFi-enabled RGB LED strip lights with app control",
+    price: 799,
+    images: [
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    subcategory: "smart home",
+    brand: "SmartLife",
+    rating: 4.4,
+    reviewCount: 89,
+    stock: 150,
+    featured: false
+  },
+  {
+    id: "new_e2",
+    name: "Smart Home Security System",
+    description: "Advanced home security system with motion detection and remote control.",
+    price: 1299,
+    images: [
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    subcategory: "security",
+    brand: "HomeSecure",
+    rating: 4.5,
+    reviewCount: 100,
+    stock: 50,
+    featured: true
+  },
+  {
+    id: "new_e3",
+    name: "Smart Home Thermostat",
+    description: "Energy-efficient smart thermostat with voice control and remote access.",
+    price: 499,
+    images: [
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    subcategory: "home appliances",
+    brand: "SmartHome",
+    rating: 4.6,
+    reviewCount: 110,
+    stock: 30,
+    featured: false
+  },
+  {
+    id: "new_e4",
+    name: "Smart Home Camera",
+    description: "High-resolution smart camera with night vision and motion detection.",
+    price: 399,
+    images: [
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    subcategory: "home appliances",
+    brand: "SmartHome",
+    rating: 4.7,
+    reviewCount: 120,
+    stock: 20,
+    featured: true
+  },
+  {
+    id: "new_e5",
+    name: "Smart Home Air Purifier",
+    description: "High-efficiency air purifier with HEPA filter and remote control.",
+    price: 299,
+    images: [
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1586902197503-e71026292412?w=800&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    subcategory: "home appliances",
+    brand: "SmartHome",
+    rating: 4.8,
+    reviewCount: 130,
+    stock: 10,
+    featured: false
   }
 ];
 
-export default productsData;
+export default [...productsData, ...additionalProducts];

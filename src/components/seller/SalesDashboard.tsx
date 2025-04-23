@@ -1,38 +1,47 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { ArrowUpRight, Package, BadgeIndianRupee, Truck } from 'lucide-react';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
+import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { Package, BadgeIndianRupee, Truck, ArrowUpRight } from 'lucide-react';
 import { formatPriceToINR } from '@/utils/priceFormatter';
+import { products } from '@/data/products';
 
-// Sample data (in a real app, this would come from the backend)
+const calculateMetrics = () => {
+  const totalSoldItems = products.reduce((acc, product) => acc + (product.reviewCount || 0), 0);
+  const totalStock = products.reduce((acc, product) => acc + product.stock, 0);
+  const totalRevenue = products.reduce((acc, product) => acc + (product.price * (product.reviewCount || 0)), 0);
+  const avgOrderValue = totalRevenue / (totalSoldItems || 1);
+  
+  return { totalSoldItems, totalStock, totalRevenue, avgOrderValue };
+};
+
+const { totalSoldItems, totalStock, totalRevenue, avgOrderValue } = calculateMetrics();
+
 const monthlySalesData = [
-  { name: 'Jan', sales: 1400 },
-  { name: 'Feb', sales: 2210 },
-  { name: 'Mar', sales: 1800 },
-  { name: 'Apr', sales: 2500 },
-  { name: 'May', sales: 3100 },
-  { name: 'Jun', sales: 2900 },
-  { name: 'Jul', sales: 3500 },
-  { name: 'Aug', sales: 4100 },
-  { name: 'Sep', sales: 3800 },
-  { name: 'Oct', sales: 4500 },
-  { name: 'Nov', sales: 5100 },
-  { name: 'Dec', sales: 6200 },
+  { name: 'Jan', sales: 140 },
+  { name: 'Feb', sales: 221 },
+  { name: 'Mar', sales: 180 },
+  { name: 'Apr', sales: 250 },
+  { name: 'May', sales: 310 },
+  { name: 'Jun', sales: 290 },
+  { name: 'Jul', sales: 350 },
+  { name: 'Aug', sales: 410 },
+  { name: 'Sep', sales: 380 },
+  { name: 'Oct', sales: 450 },
+  { name: 'Nov', sales: 510 },
+  { name: 'Dec', sales: 620 }
 ];
 
-const categorySalesData = [
-  { name: 'Electronics', value: 35 },
-  { name: 'Fashion', value: 25 },
-  { name: 'Home', value: 20 },
-  { name: 'Beauty', value: 15 },
-  { name: 'Other', value: 5 },
-];
+const categorySalesData = Object.entries(
+  products.reduce((acc, product) => {
+    acc[product.category] = (acc[product.category] || 0) + (product.reviewCount || 0);
+    return acc;
+  }, {} as Record<string, number>)
+).map(([name, value]) => ({ name, value }));
 
-const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#6E59A5'];
+const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#6E59A5', '#EC4899', '#10B981'];
 
 const SalesDashboard: React.FC = () => {
   const containerVariants = {
@@ -57,9 +66,6 @@ const SalesDashboard: React.FC = () => {
     }
   };
 
-  // Calculate total sales from sample data
-  const totalSales = monthlySalesData.reduce((acc, curr) => acc + curr.sales, 0);
-
   return (
     <motion.div 
       variants={containerVariants}
@@ -78,8 +84,8 @@ const SalesDashboard: React.FC = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Total Sales</span>
-              <span className="text-2xl font-bold">{formatPriceToINR(totalSales)}</span>
+              <span className="text-sm text-muted-foreground">Total Revenue</span>
+              <span className="text-2xl font-bold">{formatPriceToINR(totalRevenue)}</span>
               <span className="text-xs text-green-500 flex items-center mt-1">
                 <ArrowUpRight className="h-3 w-3 mr-1" />
                 12.5% from last month
@@ -94,8 +100,8 @@ const SalesDashboard: React.FC = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Orders</span>
-              <span className="text-2xl font-bold">542</span>
+              <span className="text-sm text-muted-foreground">Total Orders</span>
+              <span className="text-2xl font-bold">{totalSoldItems}</span>
               <span className="text-xs text-green-500 flex items-center mt-1">
                 <ArrowUpRight className="h-3 w-3 mr-1" />
                 8.2% from last month
@@ -111,7 +117,7 @@ const SalesDashboard: React.FC = () => {
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-sm text-muted-foreground">Avg. Order Value</span>
-              <span className="text-2xl font-bold">{formatPriceToINR(totalSales / 542)}</span>
+              <span className="text-2xl font-bold">{formatPriceToINR(avgOrderValue)}</span>
               <span className="text-xs text-green-500 flex items-center mt-1">
                 <ArrowUpRight className="h-3 w-3 mr-1" />
                 4.3% from last month
@@ -126,11 +132,11 @@ const SalesDashboard: React.FC = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Shipments</span>
-              <span className="text-2xl font-bold">498</span>
+              <span className="text-sm text-muted-foreground">Available Stock</span>
+              <span className="text-2xl font-bold">{totalStock}</span>
               <span className="text-xs text-amber-500 flex items-center mt-1">
                 <ArrowUpRight className="h-3 w-3 mr-1" />
-                44 pending
+                {totalStock < 100 ? 'Low stock alert' : 'Stock healthy'}
               </span>
             </div>
             <div className="bg-amber-500/10 p-3 rounded-full">
